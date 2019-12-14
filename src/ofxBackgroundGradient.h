@@ -19,7 +19,7 @@ public:
     //void update();
     //void exit();
 
-    ofParameterGroup params;
+    ofParameterGroup params;//the required paramaters to store preset/states
     ofxPanel gui;
 
     void setAutoSaveLoad(bool b)
@@ -33,6 +33,7 @@ public:
 private:
 
     ofParameterGroup params_controls;
+    ofParameterGroup params_circleMode;
 
     ofParameter<ofColor> color1;
     ofParameter<ofColor> color2;
@@ -45,13 +46,15 @@ private:
     ofParameter<float> degrees;
     ofParameter<bool> bRandomize;
     ofParameter<bool> bRandomizeColors;
-    ofParameter<bool> bReset;
+    ofParameter<bool> bResetAll;
+    ofParameter<bool> bResetTransform;
     ofParameter<bool> bScaleLink;
     void Changed_Params(ofAbstractParameter &e);
 
     ofColor randomColor();
     void randomize();
-    void reset();
+    void resetAll();
+    void resetTransform();
 
     bool autoSaveLoad = false;
     string path_folder = "ofxBackgroundGradient/";

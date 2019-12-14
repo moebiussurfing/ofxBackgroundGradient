@@ -24,31 +24,36 @@ void ofxBackgroundGradient::setup()
     color1.set("color1", ofColor(127), ofColor(0, 0), ofColor(255));
     color2.set("color2", ofColor(127), ofColor(0, 0), ofColor(255));
     gradientType.set("type", 1, 0, 2);
-    gradientType_str.set("", "");
+    gradientType_str.set("MODE", "");
     scaleX.set("scaleX", 2.0f, 0.1f, 5.0f);
     scaleY.set("scaleY", 2.0f, 0.1f, 5.0f);
 
-    bScaleLink.set("Link", true);
+    bScaleLink.set("Link Scales", true);
     degrees.set("degrees", 0.0f, 0.0f, 360.0f);
-    bRandomize.set("Randomize", false);
+    bRandomize.set("Randomize All", false);
     bRandomizeColors.set("Randomize Colors", false);
-    bReset.set("Reset", false);
+    bResetAll.set("Reset All", false);
+    bResetTransform.set("Reset Transform", false);
 
-    params.setName("ofxBackgroundGradient");
-    params.add(pos);
+    params.setName("PARAMETERS");
     params.add(color1);
     params.add(color2);
     params.add(gradientType);
-    params.add(scaleX);
-    params.add(scaleY);
-    //params.add(degrees);
+
+    params_circleMode.setName("CIRCULAR TYPE");
+    params_circleMode.add(pos);
+    params_circleMode.add(scaleX);
+    params_circleMode.add(scaleY);
+    //params_circleMode.add(degrees);
+    params.add(params_circleMode);
 
     params_controls.setName("CONTROLS");
     params_controls.add(gradientType_str);
     params_controls.add(bScaleLink);
     params_controls.add(bRandomize);
     params_controls.add(bRandomizeColors);
-    params_controls.add(bReset);
+    params_controls.add(bResetTransform);
+    params_controls.add(bResetAll);
 
     gui.setup();
     gui.add(params);
@@ -70,7 +75,7 @@ void ofxBackgroundGradient::setup()
 void ofxBackgroundGradient::drawBackground()
 {
     //only in circular gradient mode
-    //if (gradientType == 1)
+    if (gradientType == 1)
     {
         ofPushMatrix();
         ofTranslate(pos.get().x, pos.get().y);
@@ -81,7 +86,7 @@ void ofxBackgroundGradient::drawBackground()
     ofBackgroundGradient(color1, color2, ofGradientMode(gradientType.get()));
 
     //only in circular gradient mode
-    //if (gradientType == 1)
+    if (gradientType == 1)
     {
         ofPopMatrix();
     }
@@ -119,12 +124,18 @@ ofColor ofxBackgroundGradient::randomColor()
 }
 
 //--------------------------------------------------------------
-void ofxBackgroundGradient::reset()
+void ofxBackgroundGradient::resetAll()
 {
-    pos = glm::vec2(0, 0);
     color1.set(ofColor(127));
     color2.set(ofColor(48));
     gradientType = 0;
+    resetTransform();
+}
+
+//--------------------------------------------------------------
+void ofxBackgroundGradient::resetTransform()
+{
+    pos = glm::vec2(0, 0);
     scaleX = scaleY = 1.0;
     degrees = 0;
 }
@@ -134,7 +145,7 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 {
     string name = e.getName();
 
-    if (name == "Randomize")
+    if (name == "Randomize All")
     {
         if (bRandomize)
         {
@@ -151,15 +162,23 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
             color2.set(randomColor());
         }
     }
-    else if (name == "Reset")
+    else if (name == "Reset All")
     {
-        if (bReset)
+        if (bResetAll)
         {
-            bReset = false;
-            reset();
+            bResetAll = false;
+            resetAll();
         }
     }
-    else if (name == "Link")
+    else if (name == "Reset Transform")
+    {
+        if (bResetTransform)
+        {
+            bResetTransform = false;
+            resetTransform();
+        }
+    }
+    else if (name == "Link Scales")
     {
         if (bScaleLink)
         {
