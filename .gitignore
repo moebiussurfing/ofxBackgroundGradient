@@ -31,6 +31,19 @@ docs/tagfile.xml
 # IDE
 #########################
 
+# VS2017
+*.vcxproj
+*.vcxproj.*
+icon.rc
+*.vs
+*.vs/
+*.vs/*
+*.vs/
+*.sln
+*.filters
+*.user
+
+
 # XCode
 *.pbxuser
 *.perspective
