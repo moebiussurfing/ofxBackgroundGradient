@@ -20,6 +20,10 @@ public:
     //void exit();
 
     ofParameterGroup params;//the required paramaters to store preset/states
+    ofParameterGroup params_controls;//we need to show the controls outside too
+    ofParameter<ofColor> color1;
+    ofParameter<ofColor> color2;
+
     ofxPanel gui;
 
     void setAutoSaveLoad(bool b)
@@ -28,15 +32,14 @@ public:
         ofLogNotice("ofxBackgroundGradient") << "setAutoSaveLoad: " << b;
     }
 
+	void refreshGui();
+
     //-
 
 private:
 
-    ofParameterGroup params_controls;
     ofParameterGroup params_circleMode;
 
-    ofParameter<ofColor> color1;
-    ofParameter<ofColor> color2;
     ofParameter<glm::vec2> pos;
     ofParameter<float> scaleX;//for circle mode only
     ofParameter<float> scaleY;//for circle mode only
