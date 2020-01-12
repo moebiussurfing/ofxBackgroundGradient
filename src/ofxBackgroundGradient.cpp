@@ -75,8 +75,10 @@ void ofxBackgroundGradient::setup()
     if (autoSaveLoad)
         XML_load(params, path_folder + path_file);
 
-	auto g0 = gui.getGroup("CONTROLS");
-	g0.minimize();
+	//collapse
+	auto &g0 = gui.getGroup("GRADIENT BACKGROUND");
+	auto &g1 = g0.getGroup("CONTROLS");
+	g1.minimize();
 }
 
 ////--------------------------------------------------------------
@@ -225,23 +227,24 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
             case 2:
                 gradientType_str = "BAR";
                 break;
-
-				
-        }
+		}
 		refreshGui();
     }
 }
 
+//--------------------------------------------------------------
 void ofxBackgroundGradient::refreshGui() 
 {
-	auto g0 = gui.getGroup("GRADIANT BACKGROUND");
-	auto g1 = g0.getGroup("CIRCULAR TYPE");
+	//collapse
+	auto &g0 = gui.getGroup("GRADIENT BACKGROUND");
+	auto &g1 = g0.getGroup("CIRCULAR TYPE");
+	g1.minimize();
 	if (gradientType == 1)
-	g1.maximize();
+		g1.maximize();
 	else
 		g1.minimize();
-
 }
+
 //--------------------------------------------------------------
 void ofxBackgroundGradient::XML_load(ofParameterGroup &g, string path)
 {
