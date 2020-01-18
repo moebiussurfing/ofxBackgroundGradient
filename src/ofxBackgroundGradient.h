@@ -34,7 +34,12 @@ public:
 
 	void refreshGui();
 
-    //-
+	void reset() 
+	{
+		resetAll();
+	}
+    
+	//-
 
 private:
 

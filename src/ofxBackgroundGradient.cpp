@@ -142,7 +142,7 @@ ofColor ofxBackgroundGradient::randomColor()
 void ofxBackgroundGradient::resetAll()
 {
     color1.set(ofColor(127));
-    color2.set(ofColor(48));
+    color2.set(ofColor(24));
     gradientType = 0;
     resetTransform();
 }
