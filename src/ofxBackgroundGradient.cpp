@@ -233,6 +233,33 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 }
 
 //--------------------------------------------------------------
+void ofxBackgroundGradient::refreshGuiPtr(ofxPanel &_gui)
+{
+	//collapse
+	auto &g0 = _gui.getGroup("GRADIENT BACKGROUND");
+	auto &g1 = g0.getGroup("CIRCULAR TYPE");
+	g1.minimize();
+	if (gradientType == 1)
+		g1.maximize();
+	else
+		g1.minimize();
+}
+
+////--------------------------------------------------------------
+//void ofxBackgroundGradient::refreshGuiGrp(ofParameterGroup &_group)
+//{
+//	//collapse
+//	//auto &g0 = _group.getGroup("GRADIENT BACKGROUND");
+//	//auto &g1 = g0.getGroup("CIRCULAR TYPE");
+//	auto &g1 = _group.getGroup("CIRCULAR TYPE");
+//	g1.minimize();
+//	if (gradientType == 1)
+//		g1.maximize();
+//	else
+//		g1.minimize();
+//}
+
+//--------------------------------------------------------------
 void ofxBackgroundGradient::refreshGui() 
 {
 	//collapse

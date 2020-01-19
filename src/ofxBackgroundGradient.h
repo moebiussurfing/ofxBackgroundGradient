@@ -33,6 +33,12 @@ public:
     }
 
 	void refreshGui();
+	
+	//TODO:
+	//this method could handle the collapsing of the groups
+	//but should use guiGroups...or to pass the gui pannel and the parent levels..
+	void refreshGuiPtr(ofxPanel &_gui);
+	//void refreshGuiGrp(ofParameterGroup &_group);
 
 	void reset() 
 	{
