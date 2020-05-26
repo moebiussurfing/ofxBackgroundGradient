@@ -3,6 +3,8 @@
 //--------------------------------------------------------------
 ofxBackgroundGradient::ofxBackgroundGradient()
 {
+	path_folder = "ofxBackgroundGradient/";
+	path_file = "myBackground.xml";
 }
 
 //--------------------------------------------------------------
@@ -18,26 +20,29 @@ ofxBackgroundGradient::~ofxBackgroundGradient()
 //--------------------------------------------------------------
 void ofxBackgroundGradient::setup()
 {
-	pos.set("offset", glm::vec2(0, 0),
+	pos.set("OFFSET", glm::vec2(0, 0),
 		glm::vec2(-ofGetWidth(), -ofGetHeight()),
 		glm::vec2(ofGetWidth(), ofGetHeight()));
-	color1.set("Color Gradient 1", ofColor(127), ofColor(0, 0), ofColor(255));
-	color2.set("Color Gradient 2", ofColor(127), ofColor(0, 0), ofColor(255));
-	gradientType.set("type", 1, 0, 2);
+	color1.set("COLOR GRADIENT 1", ofColor(127), ofColor(0, 0), ofColor(255));
+	color2.set("COLOR GRADIENT 2", ofColor(127), ofColor(0, 0), ofColor(255));
+	gradientType.set("TYPE", 1, 0, 2);
 	gradientType_str.set("", "");
-	scaleX.set("scaleX", 2.0f, 0.1f, 5.0f);
-	scaleY.set("scaleY", 2.0f, 0.1f, 5.0f);
+	scaleX.set("SCALEX", 2.0f, 0.1f, 5.0f);
+	scaleY.set("SCALEY", 2.0f, 0.1f, 5.0f);
 
-	bScaleLink.set("Link Scales", true);
-	degrees.set("degrees", 0.0f, 0.0f, 360.0f);
-	bRandomize.set("Randomize All", false);
-	bRandomizeColors.set("Randomize Colors", false);
-	bResetAll.set("Reset All", false);
-	bResetTransform.set("Reset Transform", false);
+	bScaleLink.set("LINK SCALES", true);
+	degrees.set("DEGREES", 0.0f, 0.0f, 360.0f);
+	bRandomize.set("RANDOMIZE ALL", false);
+	bSwapColors.set("SWAP COLORS", false);
+	bRandomizeColors.set("RANDOMIZE COLORS", false);
+	bResetAll.set("RESET ALL", false);
+	bResetTransform.set("RESET TRANSFORM", false);
+	bEditorMode.set("EDITOR MODE", false);
 
 	params.setName("GRADIENT BACKGROUND");
 	params.add(color1);
 	params.add(color2);
+	params.add(bSwapColors);
 	params.add(gradientType);
 	params.add(gradientType_str);
 	gradientType_str.setSerializable(false);
@@ -51,6 +56,7 @@ void ofxBackgroundGradient::setup()
 
 	params_controls.setName("CONTROLS");
 
+	bSwapColors.setSerializable(false);
 	bScaleLink.setSerializable(false);
 	bRandomize.setSerializable(false);
 	bRandomizeColors.setSerializable(false);
@@ -63,6 +69,7 @@ void ofxBackgroundGradient::setup()
 	params_controls.add(bRandomizeColors);
 	params_controls.add(bResetTransform);
 	params_controls.add(bResetAll);
+	params_controls.add(bEditorMode);
 	params.add(params_controls);
 
 	gui.setup();
@@ -79,6 +86,9 @@ void ofxBackgroundGradient::setup()
 	auto &g0 = gui.getGroup("GRADIENT BACKGROUND");
 	auto &g1 = g0.getGroup("CONTROLS");
 	g1.minimize();
+	g0.minimize();
+
+	gui.setPosition(210,10);
 }
 
 ////--------------------------------------------------------------
@@ -90,18 +100,50 @@ void ofxBackgroundGradient::setup()
 void ofxBackgroundGradient::drawBackground()
 {
 	//only in circular gradient mode
-	if (gradientType == 1)
+	if (gradientType == 1 && !bEditorMode)
 	{
 		ofPushMatrix();
 		ofTranslate(pos.get().x, pos.get().y);
+		
+		ofTranslate(0.5*ofGetWidth(), 0.5*ofGetHeight());
 		ofScale(scaleX, scaleY);
+		ofTranslate(-0.5*ofGetWidth(), -0.5*ofGetHeight());
+		
 		ofBackground(color2);
+		//ofClear(color2);
 	}
 
-	ofBackgroundGradient(color1, color2, ofGradientMode(gradientType.get()));
+	//editor mode
+	if (bEditorMode) {
+		int _g = 40;
+		ofClear(0);
+		ofBackgroundGradient(ofColor(_g), ofColor(0, 0, 0), OF_GRADIENT_CIRCULAR);	
+		
+		//--
+
+		bool bPlanes = true;//draw grid plane and testing camera too
+		if (bPlanes) {
+			cam.begin();
+
+			//draw a grid on the floor
+			ofPushStyle();
+			ofPushMatrix();
+			ofSetColor(ofColor(60));
+			//ofTranslate(0, -400, 0);//change height
+			ofRotateDeg(90, 0, 0, -1);
+			ofDrawGridPlane(100, 10, false);//size of a side is 100x10 = 1000
+			ofPopMatrix();
+			ofPopStyle();
+
+			cam.end();
+		}
+	}
+	else {
+		ofBackgroundGradient(color1, color2, ofGradientMode(gradientType.get()));
+	}
 
 	//only in circular gradient mode
-	if (gradientType == 1)
+	if (gradientType == 1 && !bEditorMode)
 	{
 		ofPopMatrix();
 	}
@@ -110,14 +152,21 @@ void ofxBackgroundGradient::drawBackground()
 //--------------------------------------------------------------
 void ofxBackgroundGradient::drawGui()
 {
-	gui.draw();
+	if (bShowGui)
+	{
+		gui.draw();
+	}
 }
 
 //--------------------------------------------------------------
 void ofxBackgroundGradient::draw()
 {
 	drawBackground();
+
+	if (bShowGui)
+	{
 	drawGui();
+	}
 }
 
 //--------------------------------------------------------------
@@ -160,7 +209,7 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 {
 	string name = e.getName();
 
-	if (name == "Randomize All")
+	if (name == "RANDOMIZE ALL")
 	{
 		if (bRandomize)
 		{
@@ -168,7 +217,18 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 			randomize();
 		}
 	}
-	else if (name == "Randomize Colors")
+	else if (name == "SWAP COLORS")
+	{
+		if (bSwapColors)
+		{
+			bSwapColors = false;
+			ofColor _c;
+			_c.set(color1.get());
+			color1.set(color2.get());
+			color2 = _c;
+		}
+	}
+	else if (name == "RANDOMIZE COLORS")
 	{
 		if (bRandomizeColors)
 		{
@@ -177,7 +237,7 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 			color2.set(randomColor());
 		}
 	}
-	else if (name == "Reset All")
+	else if (name == "RESET ALL")
 	{
 		if (bResetAll)
 		{
@@ -185,7 +245,7 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 			resetAll();
 		}
 	}
-	else if (name == "Reset Transform")
+	else if (name == "RESET TRANSFORM")
 	{
 		if (bResetTransform)
 		{
@@ -193,28 +253,28 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 			resetTransform();
 		}
 	}
-	else if (name == "Link Scales")
+	else if (name == "LINK SCALES")
 	{
 		if (bScaleLink)
 		{
 			scaleY = scaleX;
 		}
 	}
-	else if (name == "scaleX")
+	else if (name == "SCALEX")
 	{
 		if (bScaleLink)
 		{
 			scaleY = scaleX;
 		}
 	}
-	else if (name == "scaleY")
+	else if (name == "SCALEY")
 	{
 		if (bScaleLink)
 		{
 			scaleX = scaleY;
 		}
 	}
-	else if (name == "type")
+	else if (name == "TYPE")
 	{
 		switch (gradientType)
 		{
