@@ -13,8 +13,17 @@ ofxBackgroundGradient::~ofxBackgroundGradient()
 	ofRemoveListener(params.parameterChangedE(), this, &ofxBackgroundGradient::Changed_Params);
 	ofRemoveListener(params_controls.parameterChangedE(), this, &ofxBackgroundGradient::Changed_Params);
 
-	if (autoSaveLoad)
+	exit();//TODO:
+}
+
+//--------------------------------------------------------------
+void ofxBackgroundGradient::exit()
+{
+	if (autoSaveLoad) {
+		positionGui = gui.getPosition();
+
 		XML_save(params, path_folder + path_file);
+	}
 }
 
 //--------------------------------------------------------------
@@ -70,6 +79,7 @@ void ofxBackgroundGradient::setup()
 	params_controls.add(bResetTransform);
 	params_controls.add(bResetAll);
 	params_controls.add(bEditorMode);
+	params_controls.add(positionGui);
 	params.add(params_controls);
 
 	gui.setup();
@@ -88,7 +98,8 @@ void ofxBackgroundGradient::setup()
 	g1.minimize();
 	g0.minimize();
 
-	gui.setPosition(210,10);
+	//gui.setPosition(210,10);
+	gui.setPosition(positionGui.get().x, positionGui.get().y);
 }
 
 ////--------------------------------------------------------------

@@ -16,6 +16,7 @@ public:
 	void drawBackground();
 	void drawGui();
 	void draw();//both
+	void exit();//TODO: should be used out of destructor if getting crashes..
 
 	//--
 
@@ -35,10 +36,19 @@ public:
 
 private:
 	ofxPanel gui;
-	bool bShowGui = false;
+
+public:
+	ofParameter<bool> bShowGui{ "BACKGROUND", false };//we use this toggle to easy add to external (ofApp) gui panel
+
+	void setPosition(glm::vec2 position) {
+		positionGui = position;
+		gui.setPosition(positionGui.get().x, positionGui.get().y);
+	}
 
 private:
 	void refreshGui();
+
+	ofParameter<glm::vec2> positionGui{ "GUI POSITION", glm::vec2(400,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
 
 	//--
 
