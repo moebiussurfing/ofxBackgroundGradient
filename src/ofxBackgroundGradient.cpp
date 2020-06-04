@@ -4,7 +4,7 @@
 ofxBackgroundGradient::ofxBackgroundGradient()
 {
 	path_folder = "ofxBackgroundGradient/";
-	path_file = "myBackground.xml";
+	path_file = "backgroundApp.xml";
 }
 
 //--------------------------------------------------------------
