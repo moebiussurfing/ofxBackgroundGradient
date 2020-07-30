@@ -14,9 +14,35 @@ public:
 	//void update();
 
 	void drawBackground();
+	void drawGrid();
 	void drawGui();
 	void draw();//both
 	void exit();//TODO: should be used out of destructor if getting crashes..
+
+private:
+	void mouseDragged(ofMouseEventArgs &eventArgs);
+	void mouseScrolled(ofMouseEventArgs &eventArgs);
+
+	//presets browser
+	void filesRefresh();
+	vector <string> imgNamesForListBox;
+	ofParameter<int> indexFilePreset;
+	ofParameter<bool> bSavePreset;
+	ofParameter<bool> bNewPreset;
+	ofParameter<bool> bNextPreset;
+	void loadPreset(int index) {
+		if (index < imgNamesForListBox.size()) {
+			loadSettings(params, path_folder + "presets/" + imgNamesForListBox[index]);
+		}
+		else
+		{
+			ofLogError(__FUNCTION__) << "Presets index file out of range!";
+		}
+
+	}
+	void loadNext() {
+		bNextPreset = true;
+	}
 
 	//--
 
@@ -39,6 +65,7 @@ private:
 
 public:
 	ofParameter<bool> bShowGui{ "BACKGROUND", false };//we use this toggle to easy add to external (ofApp) gui panel
+	ofParameter<bool> bEditByMouse{ "MOUSE EDIT", false };
 
 	void setPosition(glm::vec2 position) {
 		positionGui = position;
@@ -64,7 +91,7 @@ public:
 	void setAutoSaveLoad(bool b)
 	{
 		autoSaveLoad = b;
-		ofLogNotice("ofxBackgroundGradient") << "setAutoSaveLoad: " << b;
+		ofLogNotice(__FUNCTION__) << "setAutoSaveLoad: " << b;
 	}
 
 public:
@@ -121,14 +148,15 @@ private:
 	bool autoSaveLoad = false;
 	string path_folder;
 	string path_file;
-	void XML_load(ofParameterGroup &g, string path);
-	void XML_save(ofParameterGroup &g, string path);
+	string path_ControlSettings;
+	void loadSettings(ofParameterGroup &g, string path);
+	void saveSettings(ofParameterGroup &g, string path);
 
 	//editor cam
 	//a personalized neurral gradient color and camera too to use on a 3d editor environment
 	ofParameter<bool> bEditorMode;
 	ofEasyCam cam;//testing purpose camera
-	
+
 	//TODO: 
 	//this will require a custom gradient/mesh drawing method..
 	//also to use translations on bar/linear modes besides circular

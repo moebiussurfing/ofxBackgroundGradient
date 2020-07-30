@@ -4,6 +4,7 @@
 void ofApp::setup(){
     myBackground.setAutoSaveLoad(true);
     myBackground.setup();
+    myBackground.setVisibleGui(true);
 }
 
 //--------------------------------------------------------------
