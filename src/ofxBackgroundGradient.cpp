@@ -24,6 +24,7 @@ ofxBackgroundGradient::~ofxBackgroundGradient()
 void ofxBackgroundGradient::exit()
 {
 	if (autoSaveLoad) {
+		ofxSurfingHelpers::CheckFolder(path_folder + "presets/");
 		//if (indexFilePreset == -1) saveSettings(params, path_folder + "presets/" + path_file + ofToString(0));
 		saveSettings(params, path_folder + "presets/" + path_file + ofToString(indexFilePreset) + ".xml");
 	}
@@ -78,6 +79,7 @@ void ofxBackgroundGradient::setup()
 	params_controls.setName("CONTROLS");
 
 	bSwapColors.setSerializable(false);
+	bEditByMouse.setSerializable(false);
 	bScaleLink.setSerializable(false);
 	bRandomize.setSerializable(false);
 	bRandomizeColors.setSerializable(false);

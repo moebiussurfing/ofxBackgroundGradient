@@ -146,7 +146,7 @@ private:
 	void resetAll();
 	void resetTransform();
 
-	bool autoSaveLoad = false;
+	bool autoSaveLoad = true;
 	string path_folder;
 	string path_file;
 	string path_ControlSettings;
