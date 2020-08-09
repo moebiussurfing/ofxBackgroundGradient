@@ -28,6 +28,7 @@ void ofxBackgroundGradient::exit()
 		saveSettings(params, path_folder + "presets/" + path_file + ofToString(indexFilePreset) + ".xml");
 	}
 	positionGui = gui.getPosition();
+	ofxSurfingHelpers::CheckFolder(path_folder);
 	saveSettings(params_controls, path_folder + path_ControlSettings);
 }
 
@@ -114,6 +115,8 @@ void ofxBackgroundGradient::setup()
 	if (autoSaveLoad) {
 		loadPreset(indexFilePreset);
 	}
+
+	ofxSurfingHelpers::CheckFolder(path_folder);
 	loadSettings(params_controls, path_folder + path_ControlSettings);
 
 	//collapse
@@ -151,14 +154,16 @@ void ofxBackgroundGradient::mouseScrolled(ofMouseEventArgs &eventArgs)
 	ofLogNotice(__FUNCTION__) << "scrollX: " << scrollX << "  scrollY: " << scrollY;
 
 	if (bEditByMouse) {
-		if(scrollY == 1) scaleY += 0.1;
-		else if(scrollY == -1) scaleY -= 0.1;
+		if (scrollY == 1) scaleY += 0.1;
+		else if (scrollY == -1) scaleY -= 0.1;
 	}
 }
 
 //--------------------------------------------------------------
 void ofxBackgroundGradient::filesRefresh()
 {
+	ofxSurfingHelpers::CheckFolder(path_folder + "presets/");
+
 	ofDirectory loadDir;
 	loadDir.open(path_folder + "presets/");
 	loadDir.allowExt("xml");
@@ -174,19 +179,34 @@ void ofxBackgroundGradient::filesRefresh()
 }
 
 //--------------------------------------------------------------
-void ofxBackgroundGradient::drawGrid(){
-			//draw a grid on the floor
-			ofPushMatrix();
-			ofPushStyle();
-			ofTranslate(0, -250, 0);
-			ofRotate(90, 0, 0, -1);
-			ofSetColor(96, 128);
-			ofDrawGridPlane(500, 1, false);
-			ofSetColor(48, 128);
-			ofDrawGridPlane(250, 2, false);
-			ofPopStyle();
-			ofPopMatrix();
-			}
+void ofxBackgroundGradient::drawGrid() {
+	//draw a grid on the floor
+
+#define MAX_MAGNITUDE 1000
+
+	//ofPushMatrix();
+	//ofPushStyle();
+	//ofTranslate(0, -250, 0);
+	//ofRotate(90, 0, 0, -1);
+	//ofSetColor(96, 128);
+	//ofDrawGridPlane(500, 1, false);
+	//ofSetColor(48, 128);
+	//ofDrawGridPlane(250, 2, false);
+	//ofPopStyle();
+	//ofPopMatrix();
+
+
+	ofPushMatrix();
+	ofPushStyle();
+	ofTranslate(0, -250, 0);
+	ofRotate(90, 0, 0, -1);
+	ofSetColor(ofColor(90));
+	ofDrawGridPlane(0.4*MAX_MAGNITUDE, 1, false);
+	ofSetColor(ofColor(50));
+	ofDrawGridPlane(0.1*MAX_MAGNITUDE, 4, false);
+	ofPopStyle();
+	ofPopMatrix();
+}
 
 //--------------------------------------------------------------
 void ofxBackgroundGradient::drawBackground()

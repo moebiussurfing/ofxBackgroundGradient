@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxGui.h"
+#include "ofxSurfingHelpers.h"
 
 class ofxBackgroundGradient
 {
@@ -16,7 +17,7 @@ public:
 	void drawBackground();
 	void drawGrid();
 	void drawGui();
-	void draw();//both
+	void draw();////draw background and gui
 	void exit();//TODO: should be used out of destructor if getting crashes..
 
 private:
