@@ -221,7 +221,8 @@ void ofxBackgroundGradient::drawFloorGrid() {
 		//ofDrawGrid(gridSize, 1, true, true, true, false);//ground and yx plane
 		//y axis line
 		ofSetColor(greenFuxia);
-		ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, gridSize, 0));
+		ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, 0.1*gridSize, 0));
+		//ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, gridSize, 0));
 		//ofDrawLine(glm::vec3(0,MAX_MAGNITUDE,0), glm::vec3(0,-MAX_MAGNITUDE,0));
 		//ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, MAX_MAGNITUDE, 0));
 	}
