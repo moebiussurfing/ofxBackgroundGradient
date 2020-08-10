@@ -6,6 +6,9 @@ ofxBackgroundGradient::ofxBackgroundGradient()
 	path_folder = "ofxBackgroundGradient/";
 	path_file = "backgroundApp_";
 	path_ControlSettings = "ControlSettings.xml";
+
+	greenFuxia.setHsb(255.0f / 3.0f, 200.0f, 255.0f, 255.0f);
+
 }
 
 //--------------------------------------------------------------
@@ -54,6 +57,8 @@ void ofxBackgroundGradient::setup()
 	bResetAll.set("RESET ALL", false);
 	bResetTransform.set("RESET TRANSFORM", false);
 	bEditorMode.set("EDITOR MODE", false);
+	bDrawFloorGrid.set("FLOOR GRID", false);
+	bThemeGreenFloor.set("GREEN FLOOR", false);
 
 	bNewPreset.set("NEW PRESET", false);
 	bNextPreset.set("NEXT PRESET", false);
@@ -74,7 +79,10 @@ void ofxBackgroundGradient::setup()
 	params_circleMode.add(scaleY);
 	//params_circleMode.add(degrees);
 	params.add(params_circleMode);
+
 	params.add(bEditorMode);
+	params.add(bDrawFloorGrid);
+	params.add(bThemeGreenFloor);
 
 	params_controls.setName("CONTROLS");
 
@@ -181,31 +189,42 @@ void ofxBackgroundGradient::filesRefresh()
 }
 
 //--------------------------------------------------------------
-void ofxBackgroundGradient::drawGrid() {
+void ofxBackgroundGradient::drawFloorGrid() {
 	//draw a grid on the floor
 
 #define MAX_MAGNITUDE 1000
 
-	//ofPushMatrix();
-	//ofPushStyle();
-	//ofTranslate(0, -250, 0);
-	//ofRotate(90, 0, 0, -1);
-	//ofSetColor(96, 128);
-	//ofDrawGridPlane(500, 1, false);
-	//ofSetColor(48, 128);
-	//ofDrawGridPlane(250, 2, false);
-	//ofPopStyle();
-	//ofPopMatrix();
-
-
-	ofPushMatrix();
+	ofEnableDepthTest();
 	ofPushStyle();
+	ofSetLineWidth(2.f);
+	ofPushMatrix();
 	ofTranslate(0, -250, 0);
-	ofRotate(90, 0, 0, -1);
-	ofSetColor(ofColor(90));
-	ofDrawGridPlane(0.4*MAX_MAGNITUDE, 1, false);
-	ofSetColor(ofColor(50));
-	ofDrawGridPlane(0.1*MAX_MAGNITUDE, 4, false);
+
+	//dark colors grid
+	if (!bThemeGreenFloor)
+	{
+		ofRotate(90, 0, 0, -1);
+		ofSetColor(ofColor(90));
+		ofDrawGridPlane(0.4*MAX_MAGNITUDE, 1, false);
+		ofSetColor(ofColor(50));
+		ofDrawGridPlane(0.1*MAX_MAGNITUDE, 4, false);
+	}
+
+	//--
+
+	//green fuxia theme
+	else
+	{
+		//green is default color
+		int gridSize = 0.4*MAX_MAGNITUDE;
+		ofDrawGrid(gridSize, 1, false, false, true, false);//only ground (xz plane)
+		//ofDrawGrid(gridSize, 1, true, true, true, false);//ground and yx plane
+		//y axis line
+		ofSetColor(greenFuxia);
+		ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, gridSize, 0));
+		//ofDrawLine(glm::vec3(0,MAX_MAGNITUDE,0), glm::vec3(0,-MAX_MAGNITUDE,0));
+		//ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, MAX_MAGNITUDE, 0));
+	}
 	ofPopStyle();
 	ofPopMatrix();
 }
@@ -233,21 +252,22 @@ void ofxBackgroundGradient::drawBackground()
 		int _g2 = 5;
 		ofClear(0);
 		ofBackgroundGradient(ofColor(_g1), ofColor(_g2), OF_GRADIENT_CIRCULAR);
-
-		//--
-
-		bool bPlanes = true;//draw grid plane and testing camera too
-		if (bPlanes) {
-			cam.begin();
-
-			drawGrid();
-
-			cam.end();
-		}
 	}
 	else {
 		ofBackgroundGradient(color1, color2, ofGradientMode(gradientType.get()));
 	}
+
+	//--
+
+	////bool bPlanes = true;//draw grid plane and testing camera too
+	////if (bPlanes) 
+	//{
+	//	cam.begin();//TODO: ?
+
+	//	if (bDrawFloorGrid) drawFloorGrid();
+
+	//	cam.end();
+	//}
 
 	//only in circular gradient mode
 	if (gradientType == 1 && !bEditorMode)

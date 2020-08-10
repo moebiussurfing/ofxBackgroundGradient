@@ -7,6 +7,8 @@
 class ofxBackgroundGradient
 {
 
+	ofColor greenFuxia;
+
 public:
 	ofxBackgroundGradient();
 	~ofxBackgroundGradient();
@@ -15,7 +17,7 @@ public:
 	//void update();
 
 	void drawBackground();
-	void drawGrid();
+	void drawFloorGrid();
 	void drawGui();
 	void draw();////draw background and gui
 	void exit();//TODO: should be used out of destructor if getting crashes..
@@ -156,6 +158,8 @@ private:
 	//editor cam
 	//a personalized neurral gradient color and camera too to use on a 3d editor environment
 	ofParameter<bool> bEditorMode;
+	ofParameter<bool> bDrawFloorGrid;
+	ofParameter<bool> bThemeGreenFloor;
 	ofEasyCam cam;//testing purpose camera
 
 	//TODO: 
