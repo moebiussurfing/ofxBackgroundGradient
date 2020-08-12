@@ -150,7 +150,7 @@ void ofxBackgroundGradient::mouseDragged(ofMouseEventArgs &eventArgs)
 	const int &button = eventArgs.button;
 	//ofLogNotice(__FUNCTION__) << "mouseDragged " << x << ", " << y << ", " << button;
 
-	if (bEditByMouse) 
+	if (bEditByMouse)
 	{
 		pos = glm::vec2(x - 0.5 * ofGetWidth(), y - 0.5 * ofGetHeight());
 	}
@@ -261,6 +261,10 @@ void ofxBackgroundGradient::drawBackground()
 	//bar gradient
 	else if (gradientType == 3 || gradientType == 2)
 	{
+		////clamp
+		//scaleX = ofClamp(scaleX, 1.f, scaleX.getMax());
+		//scaleY = ofClamp(scaleY, 1.f, scaleY.getMax());
+
 		ofPushMatrix();
 		ofTranslate(pos.get().x, pos.get().y);
 
@@ -270,7 +274,9 @@ void ofxBackgroundGradient::drawBackground()
 
 		ofBackground(color2);
 		//ofClear(color2);
-		ofBackgroundGradient(color1, color2, ofGradientMode(2));
+
+		if (gradientType == 2) ofBackgroundGradient(color1, color2, ofGradientMode(1));
+		else if (gradientType == 3) ofBackgroundGradient(color1, color2, ofGradientMode(2));
 	}
 
 	//--
@@ -285,7 +291,7 @@ void ofxBackgroundGradient::drawBackground()
 	//}
 
 	//--
-	
+
 	//gradient circular
 	//bar gradient
 	if ((gradientType == 3 || gradientType == 2) && !bEditorMode)
@@ -293,12 +299,27 @@ void ofxBackgroundGradient::drawBackground()
 		ofPopMatrix();
 	}
 
+	//----
+
+	//preview translated position
 	if (bEditByMouse)
 	{
+		//TODO: must enable first..
+		if (ofGetKeyPressed() == OF_KEY_TAB) bSwapColors = !bSwapColors;
+		else if (ofGetKeyPressed() == '+') {
+			gradientType++;
+			gradientType = (int)ofWrap(gradientType, 0, 3);
+		}
+
 		ofPushStyle();
-		ofSetColor(greenFuxia);
+		ofPushMatrix();
+		ofTranslate(0.5*ofGetWidth(), 0.5*ofGetHeight());
 		ofFill();
-		ofDrawCircle(pos, 5);
+		ofSetColor(0,255);
+		ofDrawCircle(pos, 6);
+		ofSetColor(255,255);
+		ofDrawCircle(pos, 4);
+		ofPopMatrix();
 		ofPopStyle();
 	}
 }
