@@ -29,7 +29,7 @@ void ofxBackgroundGradient::exit()
 	if (autoSaveLoad) {
 		ofxSurfingHelpers::CheckFolder(path_folder + "presets/");
 		//if (indexFilePreset == -1) saveSettings(params, path_folder + "presets/" + path_file + ofToString(0));
-		saveSettings(params, path_folder + "presets/" + path_file + ofToString(indexFilePreset) + ".xml");
+		if (indexFilePreset != -1) saveSettings(params, path_folder + "presets/" + path_file + ofToString(indexFilePreset) + ".xml");
 	}
 	positionGui = gui.getPosition();
 	ofxSurfingHelpers::CheckFolder(path_folder);
@@ -42,9 +42,9 @@ void ofxBackgroundGradient::setup()
 	pos.set("OFFSET", glm::vec2(0, 0),
 		glm::vec2(-ofGetWidth(), -ofGetHeight()),
 		glm::vec2(ofGetWidth(), ofGetHeight()));
-	color1.set("COLOR GRADIENT 1", ofColor(127), ofColor(0, 0), ofColor(255));
-	color2.set("COLOR GRADIENT 2", ofColor(32), ofColor(0, 0), ofColor(255));
-	gradientType.set("TYPE", 1, 0, 2);
+	color1.set("COLOR GRADIENT 1", ofColor(200), ofColor(0), ofColor(255));
+	color2.set("COLOR GRADIENT 2", ofColor(32), ofColor(0), ofColor(255));
+	gradientType.set("TYPE", 0, 0, 3);
 	gradientType_str.set("", "");
 	scaleX.set("SCALEX", 2.0f, 0.1f, 5.0f);
 	scaleY.set("SCALEY", 2.0f, 0.1f, 5.0f);
@@ -150,7 +150,8 @@ void ofxBackgroundGradient::mouseDragged(ofMouseEventArgs &eventArgs)
 	const int &button = eventArgs.button;
 	//ofLogNotice(__FUNCTION__) << "mouseDragged " << x << ", " << y << ", " << button;
 
-	if (bEditByMouse) {
+	if (bEditByMouse) 
+	{
 		pos = glm::vec2(x - 0.5 * ofGetWidth(), y - 0.5 * ofGetHeight());
 	}
 }
@@ -194,10 +195,11 @@ void ofxBackgroundGradient::drawFloorGrid() {
 
 #define MAX_MAGNITUDE 1000
 
-	ofEnableDepthTest();
 	ofPushStyle();
-	ofSetLineWidth(2.f);
 	ofPushMatrix();
+
+	ofEnableDepthTest();
+	ofSetLineWidth(2.f);
 	ofTranslate(0, -250, 0);
 
 	//dark colors grid
@@ -226,6 +228,7 @@ void ofxBackgroundGradient::drawFloorGrid() {
 		//ofDrawLine(glm::vec3(0,MAX_MAGNITUDE,0), glm::vec3(0,-MAX_MAGNITUDE,0));
 		//ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, MAX_MAGNITUDE, 0));
 	}
+
 	ofPopStyle();
 	ofPopMatrix();
 }
@@ -233,8 +236,30 @@ void ofxBackgroundGradient::drawFloorGrid() {
 //--------------------------------------------------------------
 void ofxBackgroundGradient::drawBackground()
 {
-	//only in circular gradient mode
-	if (gradientType == 1 && !bEditorMode)
+	//editor mode
+	if (bEditorMode)
+	{
+		int _g1 = 40;
+		int _g2 = 5;
+		ofClear(0);
+		ofBackgroundGradient(ofColor(_g1), ofColor(_g2), OF_GRADIENT_CIRCULAR);
+	}
+
+	//one color
+	else if (gradientType == 0)
+	{
+		ofBackground(color1);
+	}
+
+	//gradient linear
+	else if (gradientType == 1)
+	{
+		ofBackgroundGradient(color1, color2, ofGradientMode(0));
+	}
+
+	//gradient circular
+	//bar gradient
+	else if (gradientType == 3 || gradientType == 2)
 	{
 		ofPushMatrix();
 		ofTranslate(pos.get().x, pos.get().y);
@@ -245,42 +270,43 @@ void ofxBackgroundGradient::drawBackground()
 
 		ofBackground(color2);
 		//ofClear(color2);
-	}
-
-	//editor mode
-	if (bEditorMode) {
-		int _g1 = 40;
-		int _g2 = 5;
-		ofClear(0);
-		ofBackgroundGradient(ofColor(_g1), ofColor(_g2), OF_GRADIENT_CIRCULAR);
-	}
-	else {
-		ofBackgroundGradient(color1, color2, ofGradientMode(gradientType.get()));
+		ofBackgroundGradient(color1, color2, ofGradientMode(2));
 	}
 
 	//--
 
-	////bool bPlanes = true;//draw grid plane and testing camera too
+	//draw grid plane and testing camera too
+	////bool bPlanes = true;
 	////if (bPlanes) 
 	//{
 	//	cam.begin();//TODO: ?
-
 	//	if (bDrawFloorGrid) drawFloorGrid();
-
 	//	cam.end();
 	//}
 
-	//only in circular gradient mode
-	if (gradientType == 1 && !bEditorMode)
+	//--
+	
+	//gradient circular
+	//bar gradient
+	if ((gradientType == 3 || gradientType == 2) && !bEditorMode)
 	{
 		ofPopMatrix();
+	}
+
+	if (bEditByMouse)
+	{
+		ofPushStyle();
+		ofSetColor(greenFuxia);
+		ofFill();
+		ofDrawCircle(pos, 5);
+		ofPopStyle();
 	}
 }
 
 //--------------------------------------------------------------
 void ofxBackgroundGradient::drawGui()
 {
-	if (bShowGui)
+	if (SHOW_Gui)
 	{
 		gui.draw();
 	}
@@ -291,7 +317,7 @@ void ofxBackgroundGradient::draw()
 {
 	drawBackground();
 
-	if (bShowGui)
+	if (SHOW_Gui)
 	{
 		drawGui();
 	}
@@ -302,7 +328,7 @@ void ofxBackgroundGradient::randomize()
 {
 	color1.set(randomColor());
 	color2.set(randomColor());
-	gradientType = (int)ofRandom(0.0f, 3.0f);
+	gradientType = (int)ofRandom(0.0f, 4.0f);
 	scaleX = (int)ofRandom(0.5f, 6.0f);
 	scaleY = (int)ofRandom(0.5f, 6.0f);
 }
@@ -469,12 +495,15 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 		switch (gradientType)
 		{
 		case 0:
-			gradientType_str = "LINEAR";
+			gradientType_str = "ONE COLOR";
 			break;
 		case 1:
-			gradientType_str = "CIRCULAR";
+			gradientType_str = "LINEAR";
 			break;
 		case 2:
+			gradientType_str = "CIRCULAR";
+			break;
+		case 3:
 			gradientType_str = "BAR";
 			break;
 		}
@@ -491,7 +520,7 @@ void ofxBackgroundGradient::refreshGuiPtr(ofxPanel &_gui)
 	auto &g0 = _gui.getGroup("GRADIENT BACKGROUND");
 	auto &g1 = g0.getGroup("CIRCULAR TYPE");
 	g1.minimize();
-	if (gradientType == 1)
+	if (gradientType == 2 || gradientType == 3)
 		g1.maximize();
 	else
 		g1.minimize();
@@ -518,7 +547,7 @@ void ofxBackgroundGradient::refreshGui()
 	auto &g0 = gui.getGroup("GRADIENT BACKGROUND");
 	auto &g1 = g0.getGroup("CIRCULAR TYPE");
 	g1.minimize();
-	if (gradientType == 1)
+	if (gradientType == 2 || gradientType == 3)
 		g1.maximize();
 	else
 		g1.minimize();

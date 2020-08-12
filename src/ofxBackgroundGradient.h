@@ -1,5 +1,9 @@
 #pragma once
 
+//TODO:
+//+ undo history
+//+ refill when smaller than 1 scale that do not fill the screen
+
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxSurfingHelpers.h"
@@ -41,7 +45,6 @@ private:
 		{
 			ofLogError(__FUNCTION__) << "Presets index file out of range!";
 		}
-
 	}
 	void loadNext() {
 		bNextPreset = true;
@@ -67,7 +70,7 @@ private:
 	ofxPanel gui;
 
 public:
-	ofParameter<bool> bShowGui{ "BACKGROUND", false };//we use this toggle to easy add to external (ofApp) gui panel
+	ofParameter<bool> SHOW_Gui{ "Gui BACKGROUND", false };//we use this toggle to easy add to external (ofApp) gui panel
 	ofParameter<bool> bEditByMouse{ "MOUSE EDIT", false };
 
 	void setPosition(glm::vec2 position) {
@@ -86,10 +89,10 @@ private:
 
 public:
 	void toggleVisibleGui() {
-		bShowGui = !bShowGui;
+		SHOW_Gui = !SHOW_Gui;
 	}
 	void setVisibleGui(bool b) {
-		bShowGui = b;
+		SHOW_Gui = b;
 	}
 	void setAutoSaveLoad(bool b)
 	{
