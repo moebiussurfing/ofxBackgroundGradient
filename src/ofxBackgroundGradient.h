@@ -123,6 +123,12 @@ public:
 	{
 		return gradientType.get();
 	}
+	void setSwapColors() {
+		bSwapColors = true;
+	}
+	bool getSwapColors() {
+		return bSwapColors;
+	}
 
 	//-
 

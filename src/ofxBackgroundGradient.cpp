@@ -200,7 +200,7 @@ void ofxBackgroundGradient::drawFloorGrid() {
 
 	ofEnableDepthTest();
 	ofSetLineWidth(2.f);
-	ofTranslate(0, -250, 0);
+	//ofTranslate(0, -250, 0);
 
 	//dark colors grid
 	if (!bThemeGreenFloor)
