@@ -5,7 +5,16 @@ ofxBackgroundGradient::ofxBackgroundGradient()
 {
 	path_folder = "ofxBackgroundGradient/";
 	path_file = "backgroundApp_";
-	path_ControlSettings = "ControlSettings.xml";
+
+	path_ControlSettings = "ControlSettings";
+#ifdef USE_JSON
+	_extension = ".json";
+#else
+#ifdef USE_XML
+	_extension = ".xml";
+#endif
+#endif
+	path_ControlSettings += _extension;
 
 	greenFuxia.setHsb(255.0f / 3.0f, 200.0f, 255.0f, 255.0f);
 
@@ -28,9 +37,10 @@ void ofxBackgroundGradient::exit()
 {
 	if (autoSaveLoad) {
 		ofxSurfingHelpers::CheckFolder(path_folder + "presets/");
+
 		//if (indexFilePreset == -1) saveSettings(params, path_folder + "presets/" + path_file + ofToString(0));
-		if (indexFilePreset != -1) saveSettings(params, path_folder + "presets/" + path_file + ofToString(indexFilePreset) + ".xml");
-	}
+		if (indexFilePreset != -1) saveSettings(params, path_folder + "presets/" + path_file + ofToString(indexFilePreset) + _extension);
+}
 	positionGui = gui.getPosition();
 	ofxSurfingHelpers::CheckFolder(path_folder);
 	saveSettings(params_controls, path_folder + path_ControlSettings);
@@ -315,9 +325,9 @@ void ofxBackgroundGradient::drawBackground()
 		ofPushMatrix();
 		ofTranslate(0.5*ofGetWidth(), 0.5*ofGetHeight());
 		ofFill();
-		ofSetColor(0,255);
+		ofSetColor(0, 255);
 		ofDrawCircle(pos, 6);
-		ofSetColor(255,255);
+		ofSetColor(255, 255);
 		ofDrawCircle(pos, 4);
 		ofPopMatrix();
 		ofPopStyle();
@@ -439,7 +449,7 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 			//saveSettings(params, path_folder + path_file + ofToString(imgNamesForListBox.size() - 1));
 			filesRefresh();
 			if (indexFilePreset == -1) indexFilePreset = 0;
-			saveSettings(params, path_folder + "presets/" + path_file + ofToString(indexFilePreset) + ".xml");
+			saveSettings(params, path_folder + "presets/" + path_file + ofToString(indexFilePreset) + _extension);
 		}
 	}
 	else if (name == bNextPreset.getName())
@@ -453,7 +463,7 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 			}
 			else {
 				if (autoSaveLoad) {
-					saveSettings(params, path_folder + "presets/" + path_file + ofToString(indexFilePreset) + ".xml");
+					saveSettings(params, path_folder + "presets/" + path_file + ofToString(indexFilePreset) + _extension);
 				}
 
 				if (indexFilePreset < imgNamesForListBox.size() - 1) indexFilePreset++;

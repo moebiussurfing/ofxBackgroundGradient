@@ -50,6 +50,8 @@ private:
 		bNextPreset = true;
 	}
 
+	string _extension;
+
 	//--
 
 public:
