@@ -10,5 +10,5 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void draw();
 
-    ofxBackgroundGradient myBackground;
+    ofxBackgroundGradient bg;
 };

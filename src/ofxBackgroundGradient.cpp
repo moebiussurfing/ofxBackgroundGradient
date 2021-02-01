@@ -18,6 +18,7 @@ ofxBackgroundGradient::ofxBackgroundGradient()
 
 	greenFuxia.setHsb(255.0f / 3.0f, 200.0f, 255.0f, 255.0f);
 
+	setup();
 }
 
 //--------------------------------------------------------------
@@ -150,6 +151,12 @@ void ofxBackgroundGradient::setup()
 
 	ofAddListener(ofEvents().mouseDragged, this, &ofxBackgroundGradient::mouseDragged);
 	ofAddListener(ofEvents().mouseScrolled, this, &ofxBackgroundGradient::mouseScrolled);
+
+	//--
+
+	//startup
+	setAutoSaveLoad(true);
+	setVisibleGui(true);
 }
 
 //--------------------------------------------------------------
