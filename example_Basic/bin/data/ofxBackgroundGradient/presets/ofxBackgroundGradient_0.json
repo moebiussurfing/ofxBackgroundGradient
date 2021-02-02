@@ -1,0 +1,17 @@
+{
+    "Colors": {
+        "C1": "200, 200, 200, 255",
+        "C2": "32, 32, 32, 255",
+        "Circular_Type": {
+            "Offset": "0, 0",
+            "Scale_x": "2",
+            "Scale_y": "2"
+        },
+        "Editor_Mode": {
+            "Editor_Mode": "0",
+            "Floor_Grid": "0",
+            "Green_Floor": "0"
+        },
+        "Type": "0"
+    }
+}
