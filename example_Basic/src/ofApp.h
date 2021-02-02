@@ -4,11 +4,11 @@
 
 #include "ofxBackgroundGradient.h"
 
-class ofApp : public ofBaseApp{
+class ofApp : public ofBaseApp {
 
-	public:
-		void setup();
-		void draw();
+public:
+	void draw();
+	void windowResized(int w, int h);
 
-    ofxBackgroundGradient bg;
+	ofxBackgroundGradient bg;
 };

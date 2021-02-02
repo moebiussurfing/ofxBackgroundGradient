@@ -1,26 +1,26 @@
 {
     "Preset": {
-        "Settings": {
-            "C1": "0, 200, 73, 255",
-            "C2": "255, 0, 84, 255",
-            "Circular_Type": {
-                "Offset": "0, 0",
-                "Scale_x": "2",
-                "Scale_y": "2"
-            },
-            "Settings": {
-                "Editor_Mode": "0",
-                "Floor_Grid": "0",
-                "Green_Floor": "0"
-            },
-            "Type": "2"
+        "3D_Editor_Mode": {
+            "Floor_Grid": "1",
+            "Green_Floor": "1"
         },
+        "Gradient": {
+            "Circular_Type": {
+                "Offset": "891, -40.85",
+                "Scale_x": "1.95439",
+                "Scale_y": "1.95439"
+            },
+            "Color_1": "67, 255, 0, 255",
+            "Color_2": "255, 0, 105, 255"
+        },
+        "Gui_Advanced": "0",
         "Transform": {
-            "Angle": "0",
-            "Rotator": "0",
+            "Angle": "1",
+            "Auto_Rotate": "1",
             "Speed": "1",
-            "Transform": "0",
-            "Zoom": "1"
-        }
+            "Transform": "1",
+            "Zoom": "1.46418"
+        },
+        "Type": "2"
     }
 }

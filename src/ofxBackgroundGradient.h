@@ -1,10 +1,10 @@
 #pragma once
 #include "ofMain.h"
 
+//https://github.com/rystylee/ofxCosineGradient
 //https://www.shadertoy.com/view/ltSyWz
 //https://www.shadertoy.com/view/ttBBWt
 //https://forum.openframeworks.cc/t/background-gradient/1304/2
-
 
 //TODO:
 //+ undo history
@@ -16,7 +16,9 @@
 
 //#define USE_PRESETS
 
-class ofxBackgroundGradient
+#define NUM_TYPES 6
+
+class ofxBackgroundGradient : public ofBaseApp
 {
 
 private:
@@ -28,7 +30,7 @@ private:
 
 	ofParameterGroup params_Transform;
 	ofParameter<bool> bTransform;
-	ofParameter<bool> bRotate;
+	ofParameter<bool> bRotateAuto;
 	ofParameter<float> angle;
 	ofParameter<float> zoom;
 	ofParameter<float> speed;
@@ -55,7 +57,9 @@ public:
 	~ofxBackgroundGradient();
 
 	void setup();
+	void update();
 	void exit();
+	void windowResized(int w, int h);
 
 	void draw();//draw background and gui
 	void drawBackground();//draw background
@@ -87,12 +91,14 @@ private:
 	//--
 
 public:
-	ofParameterGroup params_Settings;//preset itself
+	ofParameterGroup params_Preset;//preset itself
+	ofParameterGroup params_Gradient;
 
 	ofParameterGroup params_Editor;
 	ofParameterGroup params_AppSettings;
 	ofParameterGroup params_Advanced;
-	ofParameterGroup params_Preset;
+	
+	ofParameterGroup params_SettingsXml;
 
 private:
 	ofParameter<ofColor> color1;
@@ -105,16 +111,17 @@ private:
 	ofxPanel gui_PresetSettings;
 
 public:
-	ofParameter<bool> SHOW_Gui{ "Gui BACKGROUND", false };//we use this toggle to easy add to external (ofApp) gui panel
-	ofParameter<bool> bEditByMouse{ "MOUSE EDIT", false };
+private:
+	ofParameter<bool> bEditByMouse;
 
 	//-
 
 private:
 	ofParameter<glm::vec2> positionGui{ "GUI POSITION", glm::vec2(400,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
+	ofParameter<glm::vec2> positionGui2{ "GUI POSITION 2", glm::vec2(400,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
 
 private:
-	void refreshGui();
+	void refresh_Gui();
 
 	////TODO:
 	////this method could handle the collapsing of the groups
@@ -187,7 +194,7 @@ private:
 
 	ofParameterGroup params_circleMode;
 
-	ofParameter<glm::vec2> pos;
+	ofParameter<glm::vec2> posOffset;
 	ofParameter<float> scaleX;//for circle mode only
 	ofParameter<float> scaleY;//for circle mode only
 	ofParameter<int> gradientType;
@@ -199,8 +206,13 @@ private:
 	ofParameter<bool> bResetTransform;
 	ofParameter<bool> bScaleLink;
 
+	ofParameter<bool> SHOW_Gui_Advanced;
+	//we use this toggle to easy add to external (ofApp) gui panel
+	ofParameter<bool> SHOW_Gui;
+
 	void Changed_Params_Preset(ofAbstractParameter &e);
 	void Changed_Params_AppSettings(ofAbstractParameter &e);
+	bool bDisableCallbacks = false;
 
 	ofColor randomColor();
 	void randomize();
@@ -213,15 +225,13 @@ private:
 	std::string path_Presets;
 	std::string path_file;
 	std::string path_AppSettings;
+	std::string path_SettingsXml;
 	std::string path_PresetSettings;
 	std::string path_Images;
 
-	//void loadSettings(ofParameterGroup &g, std::string path);
-	//void saveSettings(ofParameterGroup &g, std::string path);
-
 	//editor cam
 	//a personalized neurral gradient color and camera too to use on a 3d editor environment
-	ofParameter<bool> bEditorMode;
+	//ofParameter<bool> bEditorMode;
 	ofParameter<bool> bDrawFloorGrid;
 	ofParameter<bool> bThemeGreenFloor;
 
@@ -230,7 +240,60 @@ private:
 	//TODO: 
 	//this will require a custom gradient/mesh drawing method..
 	//also to use translations on bar/linear modes besides circular
-	ofParameter<float> degrees;
+	//ofParameter<float> degrees;
+
+	void setType(int t)
+	{
+		switch (t)
+		{
+
+		case 0:
+		{
+			//gradientType_str.setWithoutEventNotifications("ONE COLOR");
+			gradientType_str = ofToString("ONE COLOR");
+		}
+		break;
+
+		case 1:
+		{
+			//gradientType_str.setWithoutEventNotifications("LINEAR");
+			gradientType_str = ofToString("LINEAR");
+		}
+		break;
+
+		case 2:
+		{
+			//gradientType_str.setWithoutEventNotifications("CIRCULAR");
+			gradientType_str = ofToString("CIRCULAR");
+		}
+		break;
+
+		case 3:
+		{
+			//gradientType_str.setWithoutEventNotifications("BAR");
+			gradientType_str = ofToString("BAR");
+		}
+		break;
+
+		case 4:
+		{
+			//gradientType_str.setWithoutEventNotifications("IMAGE");
+			gradientType_str = ofToString("IMAGE");
+		}
+		break;
+
+		case 5:
+		{
+			//gradientType_str.setWithoutEventNotifications("IMAGE");
+			gradientType_str = ofToString("3D EDITOR");
+		}
+		break;
+
+		}
+		
+		//if (t == 5) bEditorMode = true;
+		//else bEditorMode = false;
+	}
 };
 
 
