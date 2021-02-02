@@ -92,6 +92,7 @@ public:
 	ofParameterGroup params_Editor;
 	ofParameterGroup params_AppSettings;
 	ofParameterGroup params_Advanced;
+	ofParameterGroup params_Preset;
 
 private:
 	ofParameter<ofColor> color1;
@@ -101,7 +102,7 @@ private:
 
 private:
 	ofxPanel gui_AppControl;
-	ofxPanel gui_Settings;
+	ofxPanel gui_PresetSettings;
 
 public:
 	ofParameter<bool> SHOW_Gui{ "Gui BACKGROUND", false };//we use this toggle to easy add to external (ofApp) gui panel
@@ -198,7 +199,8 @@ private:
 	ofParameter<bool> bResetTransform;
 	ofParameter<bool> bScaleLink;
 
-	void Changed_Params(ofAbstractParameter &e);
+	void Changed_Params_Preset(ofAbstractParameter &e);
+	void Changed_Params_AppSettings(ofAbstractParameter &e);
 
 	ofColor randomColor();
 	void randomize();
@@ -211,6 +213,7 @@ private:
 	std::string path_Presets;
 	std::string path_file;
 	std::string path_AppSettings;
+	std::string path_PresetSettings;
 	std::string path_Images;
 
 	//void loadSettings(ofParameterGroup &g, std::string path);

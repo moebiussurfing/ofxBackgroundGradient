@@ -16,10 +16,22 @@ ofxBackgroundGradient::ofxBackgroundGradient()
 	path_file = "ofxBackgroundGradient_";
 	path_AppSettings = "AppSettings";
 	path_AppSettings += _extension;
-	
+
+#ifdef USE_PRESETS
 	path_Presets = path_Global + "presets/";
 	path_Images = path_Global + "images/";
-	
+#endif
+
+#ifndef USE_PRESETS
+	path_PresetSettings = path_Global + "ofxBackgroundGradient_Preset" + _extension;
+#endif
+
+	//-
+
+	ofxSurfingHelpers::CheckFolder(path_Global);
+	ofxSurfingHelpers::CheckFolder(path_Images);
+	ofxSurfingHelpers::CheckFolder(path_Presets);
+
 	//-
 
 	greenFuxia.setHsb(255.0f / 3.0f, 200.0f, 255.0f, 255.0f);
@@ -28,43 +40,14 @@ ofxBackgroundGradient::ofxBackgroundGradient()
 }
 
 //--------------------------------------------------------------
-ofxBackgroundGradient::~ofxBackgroundGradient()
-{
-	ofRemoveListener(params_Settings.parameterChangedE(), this, &ofxBackgroundGradient::Changed_Params);
-	ofRemoveListener(params_AppSettings.parameterChangedE(), this, &ofxBackgroundGradient::Changed_Params);
-
-	ofRemoveListener(ofEvents().mouseDragged, this, &ofxBackgroundGradient::mouseDragged);
-	ofRemoveListener(ofEvents().mouseScrolled, this, &ofxBackgroundGradient::mouseScrolled);
-
-	exit();
-}
-
-//--------------------------------------------------------------
-void ofxBackgroundGradient::exit()
-{
-	if (autoSaveLoad)
-	{
-		ofxSurfingHelpers::CheckFolder(path_Presets);
-
-#ifdef USE_PRESETS
-		if (indexFilePreset != -1) ofxSurfingHelpers::saveGroup(params_Settings, path_Presets + path_file + ofToString(indexFilePreset) + _extension);
-#endif
-	}
-
-	positionGui = gui_AppControl.getPosition();
-	ofxSurfingHelpers::saveGroup(params_AppSettings, path_Global + path_AppSettings);
-}
-
-//--------------------------------------------------------------
 void ofxBackgroundGradient::setup()
 {
-	ofxSurfingHelpers::CheckFolder(path_Global);
-	ofxSurfingHelpers::CheckFolder(path_Images);
-	ofxSurfingHelpers::CheckFolder(path_Presets);
 
 	img.load(path_Images + "img5.png");
 
 	//--
+
+	// fbo
 
 	w = ofGetWidth();
 	h = ofGetHeight();
@@ -90,6 +73,8 @@ void ofxBackgroundGradient::setup()
 	fbo.end();
 
 	//--
+
+	// params
 
 	bTransform.set("Transform", false);
 	bRotate.set("Rotator", false);
@@ -127,12 +112,7 @@ void ofxBackgroundGradient::setup()
 
 	//-
 
-	params_Editor.setName("Settings");
-	params_Editor.add(bEditorMode);
-	params_Editor.add(bDrawFloorGrid);
-	params_Editor.add(bThemeGreenFloor);
-
-	params_Settings.setName("Colors");
+	params_Settings.setName("Settings");
 	params_Settings.add(gradientType);
 	params_Settings.add(gradientType_str);
 	params_Settings.add(color1);
@@ -143,16 +123,25 @@ void ofxBackgroundGradient::setup()
 	params_circleMode.add(pos);
 	params_circleMode.add(scaleX);
 	params_circleMode.add(scaleY);
-	//params_circleMode.add(degrees);
 	params_Settings.add(params_circleMode);
 
-	params_Editor.setName("Editor Mode");
+	params_Editor.setName("Settings");
 	params_Editor.add(bEditorMode);
 	params_Editor.add(bDrawFloorGrid);
 	params_Editor.add(bThemeGreenFloor);
 	params_Settings.add(params_Editor);
 
-	//browse
+	params_Transform.setName("Transform");
+	params_Transform.add(bTransform);
+	params_Transform.add(bRotate);
+	params_Transform.add(angle);
+	params_Transform.add(speed);
+	params_Transform.add(zoom);
+
+	params_Preset.setName("Preset");
+	params_Preset.add(params_Settings);
+	params_Preset.add(params_Transform);
+
 	params_AppSettings.setName("AppSettings");
 #ifdef USE_PRESETS
 	params_AppSettings.add(bNewPreset);
@@ -162,7 +151,8 @@ void ofxBackgroundGradient::setup()
 #endif
 	params_AppSettings.add(bScaleLink);
 	params_AppSettings.add(bEditByMouse);
-	//params_AppSettings.add(bEditorMode);
+
+	//--
 
 	params_Advanced.setName("Avanced");
 	params_Advanced.add(bRandomize);
@@ -172,12 +162,7 @@ void ofxBackgroundGradient::setup()
 	params_Advanced.add(positionGui);
 	params_AppSettings.add(params_Advanced);
 
-	params_Transform.setName("Transform");
-	params_Transform.add(bTransform);
-	params_Transform.add(bRotate);
-	params_Transform.add(angle);
-	params_Transform.add(speed);
-	params_Transform.add(zoom);
+	//-
 
 	//exclude
 	gradientType_str.setSerializable(false);
@@ -189,7 +174,7 @@ void ofxBackgroundGradient::setup()
 	bRandomizeColors.setSerializable(false);
 	bResetTransform.setSerializable(false);
 	bResetAll.setSerializable(false);
-	
+
 #ifdef USE_PRESETS
 	bSavePreset.setSerializable(false);
 	bNextPreset.setSerializable(false);
@@ -202,14 +187,14 @@ void ofxBackgroundGradient::setup()
 
 	ofxSurfingHelpers::setThemeDark_ofxGui();
 
-	gui_Settings.setup("Settings");
-	gui_Settings.add(params_Settings);
-	gui_Settings.add(params_Transform);
-
+	//1. control
 	gui_AppControl.setup("ofxBackgroundGradient");
 	gui_AppControl.add(params_AppSettings);
 
-	gui_AppControl.setPosition(positionGui.get().x, positionGui.get().y);
+	//2. preset
+
+	gui_PresetSettings.setup("PresetSettings");
+	gui_PresetSettings.add(params_Preset);
 
 	//--
 
@@ -221,19 +206,18 @@ void ofxBackgroundGradient::setup()
 
 	//collapse
 
-	//gui2
-	auto &g0 = gui_Settings.getGroup(params_Settings.getName());
-	g0.minimize();
-	g0.getGroup(params_Editor.getName()).minimize();
-	auto &gt = gui_Settings.getGroup(params_Transform.getName());
-	gt.minimize();
+	////gui1
+	//auto &g1 = gui_AppControl.getGroup(params_AppSettings.getName());
+	//auto &g2 = g1.getGroup(params_Advanced.getName());
+	//g1.minimize();
+	//g2.getGroup(positionGui.getName()).minimize();
+	//g2.minimize();
 
-	//gui1
-	auto &g1 = gui_AppControl.getGroup(params_AppSettings.getName());
-	auto &g2 = g1.getGroup(params_Advanced.getName());
-	g1.minimize();
-	g2.getGroup(positionGui.getName()).minimize();
-	g2.minimize();
+	////gui2
+	//auto &g0 = gui_PresetSettings.getGroup(params_Preset.getName());
+	//g0.minimize();
+	//g0.getGroup(params_Settings.getName()).minimize();
+	//g0.getGroup(params_Transform.getName()).minimize();
 
 	//--
 
@@ -245,20 +229,28 @@ void ofxBackgroundGradient::setup()
 	}
 #endif
 
-	//--
-
-	//settings
-
-	ofAddListener(params_AppSettings.parameterChangedE(), this, &ofxBackgroundGradient::Changed_Params);
-	ofAddListener(params_Settings.parameterChangedE(), this, &ofxBackgroundGradient::Changed_Params);
-
-	ofxSurfingHelpers::loadGroup(params_AppSettings, path_Global + path_AppSettings);
-
-	//--
+	//----
 
 	//startup
 	setAutoSaveLoad(true);
 	setVisibleGui(true);
+
+	//--
+
+	//settings
+
+	ofAddListener(params_AppSettings.parameterChangedE(), this, &ofxBackgroundGradient::Changed_Params_AppSettings);
+	ofAddListener(params_Preset.parameterChangedE(), this, &ofxBackgroundGradient::Changed_Params_Preset);
+
+	//app
+	ofxSurfingHelpers::loadGroup(params_AppSettings, path_Global + path_AppSettings);
+	gui_AppControl.setPosition(positionGui.get().x, positionGui.get().y);
+
+	//preset
+#ifndef USE_PRESETS
+	ofxSurfingHelpers::loadGroup(params_Preset, path_PresetSettings);
+#endif
+
 }
 
 //--------------------------------------------------------------
@@ -449,13 +441,13 @@ void ofxBackgroundGradient::refresh()
 				ofPushMatrix();
 				ofTranslate(w / 2.f, h / 2.f);
 				{
-				ofPushStyle();
+					ofPushStyle();
 					ofFill();
 					ofSetColor(0, 255);
 					ofDrawCircle(pos, 6);
 					ofSetColor(255, 255);
 					ofDrawCircle(pos, 4);
-				ofPopStyle();
+					ofPopStyle();
 				}
 				ofPopMatrix();
 			}
@@ -472,6 +464,7 @@ void ofxBackgroundGradient::refresh()
 	}
 	fbo.end();
 }
+
 //--------------------------------------------------------------
 void ofxBackgroundGradient::drawBackground()
 {
@@ -506,8 +499,8 @@ void ofxBackgroundGradient::drawGui()
 
 		//glm::vec2 posg = gui_AppControl.getShape().getBottomLeft() + glm::vec2(0, 5);
 		glm::vec2 posg = gui_AppControl.getShape().getTopRight() + glm::vec2(5, 0);
-		gui_Settings.setPosition(posg.x, posg.y);
-		gui_Settings.draw();
+		gui_PresetSettings.setPosition(posg.x, posg.y);
+		gui_PresetSettings.draw();
 	}
 }
 
@@ -556,36 +549,29 @@ void ofxBackgroundGradient::resetTransform()
 	scaleX = scaleY = 1.0;
 	degrees = 0;
 }
-
 //--------------------------------------------------------------
-void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
+void ofxBackgroundGradient::Changed_Params_AppSettings(ofAbstractParameter &e)
 {
 	std::string name = e.getName();
 
 	if (0) {}
 
-	else if (name == gradientType.getName())
-	{
-		switch (gradientType.get())
-		{
-		case 0:
-			gradientType_str = "ONE COLOR";
-			break;
-		case 1:
-			gradientType_str = "LINEAR";
-			break;
-		case 2:
-			gradientType_str = "CIRCULAR";
-			break;
-		case 3:
-			gradientType_str = "BAR";
-			break;
-		case 4:
-			gradientType_str = "IMAGE";
-			break;
-		}
 
-		refreshGui();
+
+	else if (name == bResetTransform.getName())
+	{
+		if (bResetTransform)
+		{
+			bResetTransform = false;
+			resetTransform();
+		}
+	}
+	else if (name == bScaleLink.getName())
+	{
+		if (bScaleLink)
+		{
+			scaleY.setWithoutEventNotifications(scaleX);
+		}
 	}
 
 	else if (name == bRandomize.getName())
@@ -594,17 +580,6 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 		{
 			bRandomize = false;
 			randomize();
-		}
-	}
-	else if (name == bSwapColors.getName())
-	{
-		if (bSwapColors)
-		{
-			bSwapColors = false;
-			ofColor _c;
-			_c.set(color1.get());
-			color1.set(color2.get());
-			color2 = _c;
 		}
 	}
 	else if (name == bRandomizeColors.getName())
@@ -625,6 +600,7 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 		}
 	}
 
+	//--
 
 #ifdef USE_PRESETS
 	//browse
@@ -678,97 +654,140 @@ void ofxBackgroundGradient::Changed_Params(ofAbstractParameter &e)
 		}
 	}
 #endif
+}
+
+//--------------------------------------------------------------
+void ofxBackgroundGradient::Changed_Params_Preset(ofAbstractParameter &e)
+{
+	std::string name = e.getName();
+
+	if (0) {}
+
+	else if (name == gradientType.getName())
+	{
+		switch (gradientType.get())
+		{
+		case 0:
+			gradientType_str.setWithoutEventNotifications("ONE COLOR");
+			break;
+		case 1:
+			gradientType_str.setWithoutEventNotifications("LINEAR");
+			break;
+		case 2:
+			gradientType_str.setWithoutEventNotifications("CIRCULAR");
+			break;
+		case 3:
+			gradientType_str.setWithoutEventNotifications("BAR");
+			break;
+		case 4:
+			gradientType_str.setWithoutEventNotifications("IMAGE");
+			break;
+		}
+
+		refreshGui();
+	}
+
+	else if (name == bSwapColors.getName())
+	{
+		if (bSwapColors)
+		{
+			bSwapColors = false;
+			ofColor _c;
+			_c.set(color1.get());
+			color1.set(color2.get());
+			color2 = _c;
+		}
+	}
 
 	//--
 
-	else if (name == bResetTransform.getName())
-	{
-		if (bResetTransform)
-		{
-			bResetTransform = false;
-			resetTransform();
-		}
-	}
-	else if (name == bScaleLink.getName())
-	{
-		if (bScaleLink)
-		{
-			scaleY = scaleX;
-		}
-	}
 	else if (name == scaleX.getName())
 	{
 		if (bScaleLink)
 		{
-			scaleY = scaleX.get();
+			scaleY.setWithoutEventNotifications(scaleX.get());
 		}
 	}
 	else if (name == scaleY.getName())
 	{
 		if (bScaleLink)
 		{
-			scaleX = scaleY.get();
+			scaleX.setWithoutEventNotifications(scaleY.get());
 		}
 	}
 }
 
+//--------------------------------------------------------------
+void ofxBackgroundGradient::refreshGui()
+{
+	////collapse
+	//auto &g0 = gui_PresetSettings.getGroup(params_Settings.getName());
+	//auto &gc = g0.getGroup(params_circleMode.getName());
+	//gc.minimize();
+	//if (gradientType == 2) gc.maximize();
+}
+
+#ifdef USE_PRESETS
+//--------------------------------------------------------------
+void ofxBackgroundGradient::loadPreset(int index)
+{
+	if (index < imgNamesForListBox.size())
+	{
+		ofxSurfingHelpers::loadGroup(params_Settings, path_Presets + imgNamesForListBox[index]);
+	}
+	else
+	{
+		ofLogError(__FUNCTION__) << "Presets index file out of range!";
+	}
+}
+
+//--------------------------------------------------------------
+void ofxBackgroundGradient::loadNext()
+{
+	bNextPreset = true;
+}
+#endif
+
 ////--------------------------------------------------------------
 //void ofxBackgroundGradient::refreshGuiPtr(ofxPanel &_gui)
 //{
-//	//collapse
-//	auto &g0 = _gui_AppControl.getGroup("GRADIENT BACKGROUND");
-//	auto &g1 = g0.getGroup("CIRCULAR TYPE");
-//	g1.minimize();
-//	if (gradientType == 2 || gradientType == 3)
-//		g1.maximize();
-//	else
-//		g1.minimize();
 //}
 
 ////--------------------------------------------------------------
 //void ofxBackgroundGradient::refreshGuiGrp(ofParameterGroup &_group)
 //{
-//	//collapse
-//	//auto &g0 = _group.getGroup("GRADIENT BACKGROUND");
-//	//auto &g1 = g0.getGroup("CIRCULAR TYPE");
-//	auto &g1 = _group.getGroup("CIRCULAR TYPE");
-//	g1.minimize();
-//	if (gradientType == 1)
-//		g1.maximize();
-//	else
-//		g1.minimize();
 //}
 
 //--------------------------------------------------------------
-void ofxBackgroundGradient::refreshGui()
+ofxBackgroundGradient::~ofxBackgroundGradient()
 {
-	//collapse
-	auto &g0 = gui_Settings.getGroup(params_Settings.getName());
-	auto &gc = g0.getGroup(params_circleMode.getName());
-	gc.minimize();
+	ofRemoveListener(params_Settings.parameterChangedE(), this, &ofxBackgroundGradient::Changed_Params_AppSettings);
+	ofRemoveListener(params_Preset.parameterChangedE(), this, &ofxBackgroundGradient::Changed_Params_Preset);
 
-	if (gradientType == 2) gc.maximize();
+	ofRemoveListener(ofEvents().mouseDragged, this, &ofxBackgroundGradient::mouseDragged);
+	ofRemoveListener(ofEvents().mouseScrolled, this, &ofxBackgroundGradient::mouseScrolled);
+
+	exit();
 }
 
+//--------------------------------------------------------------
+void ofxBackgroundGradient::exit()
+{
+	if (autoSaveLoad)
+	{
+		//kit presets
 #ifdef USE_PRESETS
-
-//--------------------------------------------------------------
-	void ofxBackgroundGradient::loadPreset(int index)
-	{
-		if (index < imgNamesForListBox.size())
-		{
-			ofxSurfingHelpers::loadGroup(params_Settings, path_Presets + imgNamesForListBox[index]);
-		}
-		else
-		{
-			ofLogError(__FUNCTION__) << "Presets index file out of range!";
-		}
-	}
-
-//--------------------------------------------------------------
-	void ofxBackgroundGradient::loadNext()
-	{
-		bNextPreset = true;
-	}
-
+		ofxSurfingHelpers::CheckFolder(path_Presets);
+		if (indexFilePreset != -1) ofxSurfingHelpers::saveGroup(params_Settings, path_Presets + path_file + ofToString(indexFilePreset) + _extension);
 #endif
+
+		//preset
+#ifndef USE_PRESETS
+		ofxSurfingHelpers::saveGroup(params_Preset, path_PresetSettings);
+#endif
+	}
+
+	//app
+	positionGui = gui_AppControl.getPosition();
+	ofxSurfingHelpers::saveGroup(params_AppSettings, path_Global + path_AppSettings);
+}

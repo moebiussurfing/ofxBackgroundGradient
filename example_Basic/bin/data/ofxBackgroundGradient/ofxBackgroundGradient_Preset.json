@@ -1,0 +1,26 @@
+{
+    "Preset": {
+        "Settings": {
+            "C1": "0, 200, 73, 255",
+            "C2": "255, 0, 84, 255",
+            "Circular_Type": {
+                "Offset": "0, 0",
+                "Scale_x": "2",
+                "Scale_y": "2"
+            },
+            "Settings": {
+                "Editor_Mode": "0",
+                "Floor_Grid": "0",
+                "Green_Floor": "0"
+            },
+            "Type": "2"
+        },
+        "Transform": {
+            "Angle": "0",
+            "Rotator": "0",
+            "Speed": "1",
+            "Transform": "0",
+            "Zoom": "1"
+        }
+    }
+}
