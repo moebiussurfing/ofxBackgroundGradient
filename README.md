@@ -1,43 +1,54 @@
 # ofxBackgroundGradient 
 
 ## Overview
-*ofxBackgroundGradient* is an addon for *openFrameworks* to easy generate different background styles.  
+*ofxBackgroundGradient* is an addon for *openFrameworks* to easy generate different gradiented background styles.  
 
 ## Screenshots
 ![image](readme_images/Capture1.PNG?raw=true "Capture1.PNG")  
-![image](readme_images/Capture3.PNG?raw=true "Capture3.PNG")  
-![image](readme_images/Capture2.PNG?raw=true "Capture2.PNG")  
 
 ## Features
-- Four different types: Linear, Circular, Bar and 3D editor dark style with grid floor.  
-- Two colors with transforms: scale, x,y position for cicrcular type.
-- Store and handle different presets.  
-- Helpers: randomize colors, transforms, reset, swap colors and mouse control for position/scale.  
+- 5 different types: Linear, Circular, Bar, Image and 3D editor dark-style with 3D-Grid-Floor.  
+- Two colors with offset transforms: scale and x,y position for cicrcular type.
+- Transform animator to auto rotator with variable speed.  
+- Mouse control with wheel.  
+- Helpers: randomize colors, transforms, reset, swap colors...  
 - Control GUI.  
+- Store and handle different presets.  
 
 ## Usage
 
+ofApp.h
 ```.cpp
 #include "ofxBackgroundGradient.h"
-    
-ofxBackgroundGradient myBackground;
+
+class ofApp : public ofBaseApp {
+
+public:
+	void draw();
+
+	ofxBackgroundGradient bg;
+};
+
 ```
 
+ofApp.cpp
 ```.cpp
-//setup()
-myBackground.setAutoSaveLoad(true);
-myBackground.setup();
-myBackground.setVisibleGui(true);
-
-//draw()
-myBackground.draw();
+void ofApp::draw() 
+{
+	bg.draw();
+}
 ```
+
+## Dependencies
+- 
 
 ## Tested systems
-- Windows10 / VS2017 / OF 0.11  
+- **Windows10** / **VS2017** / **OF ~0.11**
+- **macOS High Sierra** / **Xcode 9/10** / **OF ~0.11**
 
 ## Author
-MoebiusSurfing, July 2020.  
+Addon by **@moebiusSurfing**  
+*(ManuMolina). 2020.*
 
 ## License
-MIT License.
+*MIT License.*

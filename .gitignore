@@ -5,7 +5,7 @@
 ##-------------------------------
 
 ## can exclude some sttings files
-
+gitIgnoreUpdate.ps1
 #*.XML
 #*.xml
 #*.JSON
