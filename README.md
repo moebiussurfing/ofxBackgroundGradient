@@ -13,7 +13,7 @@
 - Mouse control with wheel.  
 - Helpers: randomize colors, transforms, reset, swap colors...  
 - Control GUI.  
-- Store and handle different presets.  
+- Store and handle different presets. WIP  
 
 ## Usage
 
@@ -42,6 +42,10 @@ void ofApp::draw()
 ## Dependencies
 * ofxGui
 * [ofxSurfingHelpers](https://github.com/moebiussurfing/ofxSurfingHelpers)  
+
+## NOTE
+* Uses an fbo to refresh only when updated.  
+* Not using any shader. This would be more performant.  
 
 ## Tested systems
 - **Windows10** / **VS2017** / **OF ~0.11**
