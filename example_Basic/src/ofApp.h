@@ -8,7 +8,6 @@ class ofApp : public ofBaseApp {
 
 public:
 	void draw();
-	void windowResized(int w, int h);
 
 	ofxBackgroundGradient bg;
 };

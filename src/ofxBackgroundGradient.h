@@ -57,9 +57,7 @@ public:
 	~ofxBackgroundGradient();
 
 	void setup();
-	void update();
 	void exit();
-	void windowResized(int w, int h);
 
 	void draw();//draw background and gui
 	void drawBackground();//draw background
@@ -67,12 +65,18 @@ public:
 
 private:
 	void drawFloorGrid();
-	void refresh();
+	void refresh_Draw();
 
 private:
+	void update(ofEventArgs & args);
+	void windowResized(ofResizeEventArgs & args);
+	//void windowResized(int w, int h);
+	void keyPressed(ofKeyEventArgs &eventArgs);
+	void keyReleased(ofKeyEventArgs &eventArgs);
 	void mouseDragged(ofMouseEventArgs &eventArgs);
 	void mouseScrolled(ofMouseEventArgs &eventArgs);
 
+private:
 	//presets browser
 #ifdef USE_PRESETS
 	void filesRefresh();
@@ -87,6 +91,11 @@ private:
 #endif
 
 	std::string _extension;
+	
+	std::string helpInfo;
+	ofTrueTypeFont font;
+
+	bool bKeyMod = false;
 
 	//--
 
@@ -204,11 +213,13 @@ private:
 	ofParameter<bool> bRandomizeColors;
 	ofParameter<bool> bResetAll;
 	ofParameter<bool> bResetTransform;
+	ofParameter<bool> bResetOffset;
 	ofParameter<bool> bScaleLink;
 
 	ofParameter<bool> SHOW_Gui_Advanced;
 	//we use this toggle to easy add to external (ofApp) gui panel
 	ofParameter<bool> SHOW_Gui;
+	ofParameter<bool> SHOW_Help;
 
 	void Changed_Params_Preset(ofAbstractParameter &e);
 	void Changed_Params_AppSettings(ofAbstractParameter &e);
@@ -218,6 +229,7 @@ private:
 	void randomize();
 	void resetAll();
 	void resetTransform();
+	void resetOffset();
 
 	bool autoSaveLoad = true;
 
