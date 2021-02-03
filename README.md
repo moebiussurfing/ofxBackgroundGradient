@@ -21,22 +21,12 @@ ofApp.h
 ```.cpp
 #include "ofxBackgroundGradient.h"
 
-class ofApp : public ofBaseApp {
-
-public:
-	void draw();
-
-	ofxBackgroundGradient bg;
-};
-
+ofxBackgroundGradient bg;
 ```
 
 ofApp.cpp
 ```.cpp
-void ofApp::draw() 
-{
-	bg.draw();
-}
+bg.draw();
 ```
 
 ## Dependencies
