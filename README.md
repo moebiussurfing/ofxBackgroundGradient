@@ -40,7 +40,8 @@ void ofApp::draw()
 ```
 
 ## Dependencies
-- 
+* ofxGui
+* [ofxSurfingHelpers](https://github.com/moebiussurfing/ofxSurfingHelpers)  
 
 ## Tested systems
 - **Windows10** / **VS2017** / **OF ~0.11**
