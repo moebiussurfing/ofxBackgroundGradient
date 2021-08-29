@@ -1,28 +1,29 @@
 {
     "Preset": {
         "3D_Editor_Mode": {
-            "FLOOR": "0",
-            "Floor_Grid": "0",
-            "Green_Floor": "1"
+            "Floor": "0",
+            "Green_Floor": "0",
+            "Grey_Floor": "0"
         },
         "Gradient": {
             "Circular_Type": {
                 "Link_Scales": "1",
-                "Offset": "-323, 312.6",
+                "Offset": "-184, 14.6",
                 "Scale_x": "1",
                 "Scale_y": "1"
             },
-            "Color_1": "252, 75, 157, 255",
-            "Color_2": "94, 35, 197, 255"
+            "Color_1": "83, 248, 57, 255",
+            "Color_2": "102, 36, 162, 255"
         },
         "Gui_Advanced": "0",
-        "HELP": "0",
+        "Help": "1",
+        "Keys": "1",
         "Transform": {
-            "Angle": "825.522",
+            "Angle": "0",
             "Auto_Rotate": "0",
-            "Speed": "0.245888",
-            "Transform": "1",
-            "Zoom": "2.57049"
+            "Speed": "1",
+            "Transform": "0",
+            "Zoom": "1"
         },
         "Type": "2"
     }

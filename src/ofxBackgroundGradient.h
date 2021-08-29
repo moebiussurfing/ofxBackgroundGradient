@@ -229,6 +229,7 @@ public:
 	//we use this toggle to easy add to external (ofApp) gui panel
 	ofParameter<bool> bGui;
 	ofParameter<bool> bGui_Help;
+	ofParameter<bool> bKeys;
 
 private:
 	void Changed_Params_Preset(ofAbstractParameter &e);
@@ -258,7 +259,7 @@ private:
 	ofParameter<bool> bThemeGreenFloor;
 	
 public:
-	ofParameter<bool> bFloor{ "FLOOR", false };
+	ofParameter<bool> bFloor{ "Floor", false };
 
 	private:
 	ofEasyCam cam;//testing purpose camera

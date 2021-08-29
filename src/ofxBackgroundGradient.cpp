@@ -45,9 +45,10 @@ ofxBackgroundGradient::ofxBackgroundGradient()
 	helpInfo += "G              GUI\n";
 	helpInfo += "+|-            TYPE\n";
 	helpInfo += "TAB            SWAP COLORS\n";
+	helpInfo += "M              MOUSE EDIT\n";
 	helpInfo += "MOUSE WHEEL    ZOOM TRANSFORM\n";
 	helpInfo += "+Ctrl          ZOOM OFFSET\n";
-	
+
 	//-
 
 	greenFuxia.setHsb(255.0f / 3.0f, 200.0f, 255.0f, 255.0f);
@@ -95,7 +96,8 @@ void ofxBackgroundGradient::setup()
 	bGui.set("Gui BACKGROUND", false);//we use this toggle to easy add to external (ofApp) gui panel
 	bEditByMouse.set("Mouse Edit", false);
 	bGui_Advanced.set("Gui Advanced", false);
-	bGui_Help.set("HELP", false);
+	bGui_Help.set("Help", false);
+	bKeys.set("Keys", true);
 
 	bTransform.set("Transform", false);
 	bRotateAuto.set("Auto Rotate", false);
@@ -122,7 +124,7 @@ void ofxBackgroundGradient::setup()
 	bResetTransform.set("Reset Transform", false);
 	bResetOffset.set("Reset Offset", false);
 	//bEditorMode.set("Editor Mode", false);
-	bDrawFloorGrid.set("Floor Grid", false);
+	bDrawFloorGrid.set("Grey Floor", false);
 	bThemeGreenFloor.set("Green Floor", false);
 
 #ifdef USE_PRESETS
@@ -166,14 +168,16 @@ void ofxBackgroundGradient::setup()
 	params_Preset.add(gradientType_str);
 	//params_Preset.add(bScaleLink);
 	//params_Preset.add(bEditByMouse);//TODO: broken
-	params_Preset.add(bGui_Advanced);
-	params_Preset.add(bGui_Help);
-	params_Preset.add(bEditByMouse);
 
 	params_Preset.add(params_Gradient);
 	params_Preset.add(params_Transform);
 
 	params_Preset.add(params_Editor);//-> floor environment
+
+	params_Preset.add(bGui_Advanced);
+	params_Preset.add(bEditByMouse);
+	params_Preset.add(bGui_Help);
+	params_Preset.add(bKeys);
 
 	//--
 
@@ -293,7 +297,7 @@ void ofxBackgroundGradient::setup()
 	ofxSurfingHelpers::loadGroup(params_SettingsXml, path_SettingsXml);
 
 	gui_AppControl.setPosition(positionGui.get().x, positionGui.get().y);
-	
+
 	gui_PresetSettings.setPosition(positionGui2.get().x, positionGui2.get().y);
 
 	//preset
@@ -307,7 +311,7 @@ void ofxBackgroundGradient::setup()
 	if (autoSaveLoad)
 	{
 		loadPreset(indexFilePreset);
-	}
+}
 #endif
 }
 
@@ -531,6 +535,25 @@ void ofxBackgroundGradient::drawBackground()
 	else
 	{
 		fbo.draw(0, 0, w, h);
+	}
+
+	if (bEditByMouse && bGui)
+	{
+		float r = 5;
+		ofPushStyle();
+		ofPushMatrix();
+		//ofTranslate(posOffset.get());
+		ofTranslate(
+			glm::vec2(posOffset.get().x, posOffset.get().y) +
+			glm::vec2(ofGetWidth() / 2, ofGetHeight() / 2));
+		ofFill();
+		ofSetColor(255, 225);
+		ofDrawCircle(0, 0, r);
+		ofNoFill();
+		ofSetColor(0, 255);
+		ofDrawCircle(0, 0, r);
+		ofPopMatrix();
+		ofPopStyle();
 	}
 }
 
@@ -816,7 +839,7 @@ void ofxBackgroundGradient::Changed_Params_Preset(ofAbstractParameter &e)
 		// floor
 		else if (name == bDrawFloorGrid.getName())
 		{
-			if(bDrawFloorGrid) bThemeGreenFloor = false;
+			if (bDrawFloorGrid) bThemeGreenFloor = false;
 			else bThemeGreenFloor = true;
 		}
 		else if (name == bThemeGreenFloor.getName())
@@ -985,6 +1008,8 @@ void ofxBackgroundGradient::keyReleased(ofKeyEventArgs &eventArgs)
 //--------------------------------------------------------------
 void ofxBackgroundGradient::keyPressed(ofKeyEventArgs &eventArgs)
 {
+	if (!bKeys) return;
+
 	const int key = eventArgs.key;
 
 	// modifiers
@@ -1008,6 +1033,11 @@ void ofxBackgroundGradient::keyPressed(ofKeyEventArgs &eventArgs)
 	if (key == 'h')
 	{
 		bGui_Help = !bGui_Help;
+	}
+
+	if (key == 'm')
+	{
+		bEditByMouse = !bEditByMouse;
 	}
 
 	if (bEditByMouse)

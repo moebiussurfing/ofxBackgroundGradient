@@ -1,7 +1,7 @@
 # ofxBackgroundGradient 
 
 ## Overview
-*ofxBackgroundGradient* is an addon for *openFrameworks* to easy generate different gradiented background styles.  
+*ofxBackgroundGradient* is an add-on for *openFrameworks* to easy generate different gradiented background styles.  
 
 ## Screenshots
 ![image](readme_images/Capture1.PNG?raw=true "Capture1.PNG")  
@@ -30,7 +30,7 @@ bg.draw();
 ```
 
 ## Dependencies
-* ofxGui
+* ofxGui [Core]
 * [ofxSurfingHelpers](https://github.com/moebiussurfing/ofxSurfingHelpers)  
 
 ## NOTE
