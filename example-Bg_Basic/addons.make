@@ -1,3 +1,3 @@
-ofxGui
 ofxBackgroundGradient
+ofxGui
 ofxSurfingHelpers

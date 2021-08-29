@@ -40,7 +40,7 @@ ofxBackgroundGradient::ofxBackgroundGradient()
 
 	//-
 
-	helpInfo = "HELP\n";
+	helpInfo = "HELP\n\n";
 	helpInfo += "H              HELP\n";
 	helpInfo += "G              GUI\n";
 	helpInfo += "+|-            TYPE\n";
@@ -92,10 +92,10 @@ void ofxBackgroundGradient::setup()
 	//--
 
 	// params
-	SHOW_Gui.set("Gui BACKGROUND", false);//we use this toggle to easy add to external (ofApp) gui panel
+	bGui.set("Gui BACKGROUND", false);//we use this toggle to easy add to external (ofApp) gui panel
 	bEditByMouse.set("Mouse Edit", false);
-	SHOW_Gui_Advanced.set("Gui Advanced", false);
-	SHOW_Help.set("HELP", false);
+	bGui_Advanced.set("Gui Advanced", false);
+	bGui_Help.set("HELP", false);
 
 	bTransform.set("Transform", false);
 	bRotateAuto.set("Auto Rotate", false);
@@ -115,7 +115,7 @@ void ofxBackgroundGradient::setup()
 
 	bScaleLink.set("Link Scales", true);
 	//degrees.set("Degrees", 0.0f, 0.0f, 360.0f);
-	bRandomize.set("Randomize All", false);
+	bRandomizeAll.set("Randomize All", false);
 	bSwapColors.set("Swap Colors", false);
 	bRandomizeColors.set("Randomize Colors", false);
 	bResetAll.set("Reset All", false);
@@ -149,6 +149,7 @@ void ofxBackgroundGradient::setup()
 
 	params_Editor.setName("3D Editor Mode");
 	//params_Editor.add(bEditorMode);
+	params_Editor.add(bFloor);
 	params_Editor.add(bDrawFloorGrid);
 	params_Editor.add(bThemeGreenFloor);
 	//params_Gradient.add(params_Editor);
@@ -165,13 +166,14 @@ void ofxBackgroundGradient::setup()
 	params_Preset.add(gradientType_str);
 	//params_Preset.add(bScaleLink);
 	//params_Preset.add(bEditByMouse);//TODO: broken
-	params_Preset.add(SHOW_Gui_Advanced);
-	params_Preset.add(SHOW_Help);
+	params_Preset.add(bGui_Advanced);
+	params_Preset.add(bGui_Help);
 	params_Preset.add(bEditByMouse);
 
 	params_Preset.add(params_Gradient);
-	params_Preset.add(params_Editor);
 	params_Preset.add(params_Transform);
+
+	params_Preset.add(params_Editor);//-> floor environment
 
 	//--
 
@@ -186,7 +188,7 @@ void ofxBackgroundGradient::setup()
 	//--
 
 	params_Advanced.setName("Advanced");
-	params_Advanced.add(bRandomize);
+	params_Advanced.add(bRandomizeAll);
 	params_Advanced.add(bRandomizeColors);
 	params_Advanced.add(bResetTransform);
 	params_Advanced.add(bResetOffset);
@@ -205,7 +207,7 @@ void ofxBackgroundGradient::setup()
 	bSwapColors.setSerializable(false);
 	bEditByMouse.setSerializable(false);
 	//bScaleLink.setSerializable(false);
-	bRandomize.setSerializable(false);
+	bRandomizeAll.setSerializable(false);
 	bRandomizeColors.setSerializable(false);
 	bRandomizeColors.setSerializable(false);
 	bResetTransform.setSerializable(false);
@@ -227,9 +229,10 @@ void ofxBackgroundGradient::setup()
 	gui_AppControl.setup("ofxBackgroundGradient");
 	gui_AppControl.add(params_Advanced);
 	//gui_AppControl.add(params_AppSettings);
+	//gui_AppControl.setPosition();
 
 	//2. preset
-	gui_PresetSettings.setup("PresetSettings");
+	gui_PresetSettings.setup("ofxBackgroundGradient");
 	gui_PresetSettings.add(params_Preset);
 
 	//--
@@ -284,11 +287,13 @@ void ofxBackgroundGradient::setup()
 	params_SettingsXml.setName("SettingsXml");
 	params_SettingsXml.add(positionGui);
 	params_SettingsXml.add(positionGui2);
-	params_SettingsXml.add(SHOW_Gui_Advanced);
-	params_SettingsXml.add(SHOW_Gui);
+	params_SettingsXml.add(bGui_Advanced);
+	params_SettingsXml.add(bGui);
 
 	ofxSurfingHelpers::loadGroup(params_SettingsXml, path_SettingsXml);
+
 	gui_AppControl.setPosition(positionGui.get().x, positionGui.get().y);
+	
 	gui_PresetSettings.setPosition(positionGui2.get().x, positionGui2.get().y);
 
 	//preset
@@ -363,45 +368,49 @@ void ofxBackgroundGradient::filesRefresh()
 #endif
 
 //--------------------------------------------------------------
-void ofxBackgroundGradient::drawFloorGrid() {
-	//draw a grid on the floor
+void ofxBackgroundGradient::drawFloor() {
+	if (!bFloor) return;
+	if (!bDrawFloorGrid && !bThemeGreenFloor) return;
 
+	//-
+
+	//draw a grid on the floor
 #define MAX_MAGNITUDE 1000
 
 	ofPushStyle();
 	ofPushMatrix();
-
-	ofEnableDepthTest();
-	ofSetLineWidth(2.f);
-	//ofTranslate(0, -250, 0);
-
-	//dark colors grid
-	if (!bThemeGreenFloor)
 	{
-		ofRotate(90, 0, 0, -1);
-		ofSetColor(ofColor(90));
-		ofDrawGridPlane(0.4*MAX_MAGNITUDE, 1, false);
-		ofSetColor(ofColor(50));
-		ofDrawGridPlane(0.1*MAX_MAGNITUDE, 4, false);
+		ofEnableDepthTest();
+		ofSetLineWidth(2.f);
+		//ofTranslate(0, -250, 0);
+
+		//dark colors grid
+		if (bDrawFloorGrid)
+		{
+			ofRotate(90, 0, 0, -1);
+			ofSetColor(ofColor(90));
+			ofDrawGridPlane(0.4*MAX_MAGNITUDE, 1, false);
+			ofSetColor(ofColor(50));
+			ofDrawGridPlane(0.1*MAX_MAGNITUDE, 4, false);
+		}
+
+		//--
+
+		//green fuxia theme
+		else if (bThemeGreenFloor)
+		{
+			//green is default color
+			int gridSize = 0.4*MAX_MAGNITUDE;
+			ofDrawGrid(gridSize, 1, false, false, true, false);//only ground (xz plane)
+			//ofDrawGrid(gridSize, 1, true, true, true, false);//ground and yx plane
+			//y axis line
+			ofSetColor(greenFuxia);
+			ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, 0.1*gridSize, 0));
+			//ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, gridSize, 0));
+			//ofDrawLine(glm::vec3(0,MAX_MAGNITUDE,0), glm::vec3(0,-MAX_MAGNITUDE,0));
+			//ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, MAX_MAGNITUDE, 0));
+		}
 	}
-
-	//--
-
-	//green fuxia theme
-	else
-	{
-		//green is default color
-		int gridSize = 0.4*MAX_MAGNITUDE;
-		ofDrawGrid(gridSize, 1, false, false, true, false);//only ground (xz plane)
-		//ofDrawGrid(gridSize, 1, true, true, true, false);//ground and yx plane
-		//y axis line
-		ofSetColor(greenFuxia);
-		ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, 0.1*gridSize, 0));
-		//ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, gridSize, 0));
-		//ofDrawLine(glm::vec3(0,MAX_MAGNITUDE,0), glm::vec3(0,-MAX_MAGNITUDE,0));
-		//ofDrawLine(glm::vec3(0, 0, 0), glm::vec3(0, MAX_MAGNITUDE, 0));
-	}
-
 	ofPopStyle();
 	ofPopMatrix();
 }
@@ -482,7 +491,7 @@ void ofxBackgroundGradient::refresh_Draw()
 		////if (bPlanes) 
 		//{
 		//	cam.begin();//TODO: ?
-		//	if (bDrawFloorGrid) drawFloorGrid();
+		//	if (bDrawFloorGrid) drawFloor();
 		//	cam.end();
 		//}
 
@@ -528,11 +537,13 @@ void ofxBackgroundGradient::drawBackground()
 //--------------------------------------------------------------
 void ofxBackgroundGradient::drawGui()
 {
-	if (SHOW_Gui)
+	if (bGui)
 	{
-		if (SHOW_Help) ofxSurfingHelpers::drawTextBoxed(font, helpInfo, 10, 10);
+		ofDisableDepthTest();
 
-		if (SHOW_Gui_Advanced) gui_AppControl.draw();
+		if (bGui_Help) ofxSurfingHelpers::drawTextBoxed(font, helpInfo, 10, 10);
+
+		if (bGui_Advanced) gui_AppControl.draw();
 
 		//glm::vec2 posg = gui_AppControl.getShape().getBottomLeft() + glm::vec2(0, 5);
 		//glm::vec2 posg = gui_AppControl.getShape().getTopRight() + glm::vec2(5, 0);
@@ -544,12 +555,6 @@ void ofxBackgroundGradient::drawGui()
 //--------------------------------------------------------------
 void ofxBackgroundGradient::update(ofEventArgs & args)
 {
-
-}
-
-//--------------------------------------------------------------
-void ofxBackgroundGradient::draw()
-{
 	//workaround to avoid callback crashes
 	if (ofGetFrameNum() == 0)
 	{
@@ -557,21 +562,27 @@ void ofxBackgroundGradient::draw()
 		setType(gradientType);
 		refresh_Gui();
 	}
+}
 
+//--------------------------------------------------------------
+void ofxBackgroundGradient::draw()
+{
 	drawBackground();
 
-	if (SHOW_Gui)
+	//-
+
+	if (bGui)
 	{
 		drawGui();
 	}
 }
 
 //--------------------------------------------------------------
-void ofxBackgroundGradient::randomize()
+void ofxBackgroundGradient::randomizeAll()
 {
 	color1.set(randomColor());
 	color2.set(randomColor());
-	gradientType = (int)ofRandom(0.0f, 5.0f);
+	gradientType = (int)ofRandom(0.0f, 4.0f);
 	scaleX = (int)ofRandom(0.5f, 6.0f);
 	scaleY = (int)ofRandom(0.5f, 6.0f);
 }
@@ -637,12 +648,12 @@ void ofxBackgroundGradient::Changed_Params_AppSettings(ofAbstractParameter &e)
 		}
 	}
 
-	else if (name == bRandomize.getName())
+	else if (name == bRandomizeAll.getName())
 	{
-		if (bRandomize)
+		if (bRandomizeAll)
 		{
-			bRandomize = false;
-			randomize();
+			bRandomizeAll = false;
+			randomizeAll();
 		}
 	}
 	else if (name == bRandomizeColors.getName())
@@ -798,6 +809,20 @@ void ofxBackgroundGradient::Changed_Params_Preset(ofAbstractParameter &e)
 				//scaleX.setWithoutEventNotifications(scaleY.get());
 				scaleX.set(scaleY.get());
 			}
+		}
+
+		//-
+
+		// floor
+		else if (name == bDrawFloorGrid.getName())
+		{
+			if(bDrawFloorGrid) bThemeGreenFloor = false;
+			else bThemeGreenFloor = true;
+		}
+		else if (name == bThemeGreenFloor.getName())
+		{
+			if (bThemeGreenFloor) bDrawFloorGrid = false;
+			else bDrawFloorGrid = true;
 		}
 	}
 }
@@ -982,7 +1007,7 @@ void ofxBackgroundGradient::keyPressed(ofKeyEventArgs &eventArgs)
 
 	if (key == 'h')
 	{
-		SHOW_Help = !SHOW_Help;
+		bGui_Help = !bGui_Help;
 	}
 
 	if (bEditByMouse)

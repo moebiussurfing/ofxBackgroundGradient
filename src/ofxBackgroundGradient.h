@@ -1,14 +1,18 @@
 #pragma once
+
 #include "ofMain.h"
 
+// some useful links:
 //https://github.com/rystylee/ofxCosineGradient
 //https://www.shadertoy.com/view/ltSyWz
 //https://www.shadertoy.com/view/ttBBWt
 //https://forum.openframeworks.cc/t/background-gradient/1304/2
 
 //TODO:
-//+ undo history
-//+ refill when smaller than 1 scale that do not fill the screen
+// + Refill when smaller than 1 scale that do not fill the screen
+// + Fix bar transformation margins to fit window
+
+//-
 
 #include "ofxGui.h"
 #include "ofxSurfingHelpers.h"
@@ -18,7 +22,8 @@
 
 #define NUM_TYPES 6
 
-class ofxBackgroundGradient : public ofBaseApp
+class ofxBackgroundGradient
+//class ofxBackgroundGradient : public ofBaseApp
 {
 
 private:
@@ -63,8 +68,10 @@ public:
 	void drawBackground();//draw background
 	void drawGui();//draw gui
 
+public:
+	void drawFloor();
+
 private:
-	void drawFloorGrid();
 	void refresh_Draw();
 
 private:
@@ -91,7 +98,7 @@ private:
 #endif
 
 	std::string _extension;
-	
+
 	std::string helpInfo;
 	ofTrueTypeFont font;
 
@@ -106,10 +113,11 @@ public:
 	ofParameterGroup params_Editor;
 	ofParameterGroup params_AppSettings;
 	ofParameterGroup params_Advanced;
-	
+
 	ofParameterGroup params_SettingsXml;
 
-private:
+//private:
+public:
 	ofParameter<ofColor> color1;
 	ofParameter<ofColor> color2;
 
@@ -119,7 +127,7 @@ private:
 	ofxPanel gui_AppControl;
 	ofxPanel gui_PresetSettings;
 
-public:
+//public:
 private:
 	ofParameter<bool> bEditByMouse;
 
@@ -127,7 +135,7 @@ private:
 
 private:
 	ofParameter<glm::vec2> positionGui{ "GUI POSITION", glm::vec2(400,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
-	ofParameter<glm::vec2> positionGui2{ "GUI POSITION 2", glm::vec2(400,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
+	ofParameter<glm::vec2> positionGui2{ "GUI POSITION 2", glm::vec2(600,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
 
 private:
 	void refresh_Gui();
@@ -150,11 +158,11 @@ public:
 
 	void toggleVisibleGui()
 	{
-		SHOW_Gui = !SHOW_Gui;
+		bGui = !bGui;
 	}
 	void setVisibleGui(bool b)
 	{
-		SHOW_Gui = b;
+		bGui = b;
 	}
 	void setAutoSaveLoad(bool b)
 	{
@@ -208,7 +216,7 @@ private:
 	ofParameter<float> scaleY;//for circle mode only
 	ofParameter<int> gradientType;
 	ofParameter<std::string> gradientType_str;
-	ofParameter<bool> bRandomize;
+	ofParameter<bool> bRandomizeAll;
 	ofParameter<bool> bSwapColors;
 	ofParameter<bool> bRandomizeColors;
 	ofParameter<bool> bResetAll;
@@ -216,17 +224,19 @@ private:
 	ofParameter<bool> bResetOffset;
 	ofParameter<bool> bScaleLink;
 
-	ofParameter<bool> SHOW_Gui_Advanced;
+public:
+	ofParameter<bool> bGui_Advanced;
 	//we use this toggle to easy add to external (ofApp) gui panel
-	ofParameter<bool> SHOW_Gui;
-	ofParameter<bool> SHOW_Help;
+	ofParameter<bool> bGui;
+	ofParameter<bool> bGui_Help;
 
+private:
 	void Changed_Params_Preset(ofAbstractParameter &e);
 	void Changed_Params_AppSettings(ofAbstractParameter &e);
 	bool bDisableCallbacks = false;
 
 	ofColor randomColor();
-	void randomize();
+	void randomizeAll();
 	void resetAll();
 	void resetTransform();
 	void resetOffset();
@@ -246,7 +256,11 @@ private:
 	//ofParameter<bool> bEditorMode;
 	ofParameter<bool> bDrawFloorGrid;
 	ofParameter<bool> bThemeGreenFloor;
+	
+public:
+	ofParameter<bool> bFloor{ "FLOOR", false };
 
+	private:
 	ofEasyCam cam;//testing purpose camera
 
 	//TODO: 
@@ -302,7 +316,7 @@ private:
 		break;
 
 		}
-		
+
 		//if (t == 5) bEditorMode = true;
 		//else bEditorMode = false;
 	}
