@@ -164,6 +164,7 @@ void ofxBackgroundGradient::setup()
 	params_Transform.add(speed);
 
 	params_Preset.setName("Preset");
+	params_Preset.add(bEnable);
 	params_Preset.add(gradientType);
 	params_Preset.add(gradientType_str);
 	//params_Preset.add(bScaleLink);
@@ -318,6 +319,8 @@ void ofxBackgroundGradient::setup()
 //--------------------------------------------------------------
 void ofxBackgroundGradient::mouseDragged(ofMouseEventArgs &eventArgs)
 {
+	if (!bEnable) return;
+
 	const int &x = eventArgs.x;
 	const int &y = eventArgs.y;
 	const int &button = eventArgs.button;
@@ -331,6 +334,8 @@ void ofxBackgroundGradient::mouseDragged(ofMouseEventArgs &eventArgs)
 //--------------------------------------------------------------
 void ofxBackgroundGradient::mouseScrolled(ofMouseEventArgs &eventArgs)
 {
+	if (!bEnable) return;
+
 	const int &x = eventArgs.x;
 	const int &y = eventArgs.y;
 	const float &scrollX = eventArgs.scrollX;
@@ -373,6 +378,8 @@ void ofxBackgroundGradient::filesRefresh()
 
 //--------------------------------------------------------------
 void ofxBackgroundGradient::drawFloor() {
+	if (!bEnable) return;
+
 	if (!bFloor) return;
 	if (!bDrawFloorGrid && !bThemeGreenFloor) return;
 
@@ -422,6 +429,8 @@ void ofxBackgroundGradient::drawFloor() {
 //--------------------------------------------------------------
 void ofxBackgroundGradient::refresh_Draw()
 {
+	if (!bEnable) return;
+
 	fbo.begin();
 	ofClear(ofColor::black);
 	{
@@ -514,6 +523,8 @@ void ofxBackgroundGradient::refresh_Draw()
 //--------------------------------------------------------------
 void ofxBackgroundGradient::drawBackground()
 {
+if (!bEnable) return;
+
 	if (bTransform)
 	{
 		if (bRotateAuto)
@@ -578,6 +589,8 @@ void ofxBackgroundGradient::drawGui()
 //--------------------------------------------------------------
 void ofxBackgroundGradient::update(ofEventArgs & args)
 {
+	if (!bEnable) return;
+
 	//workaround to avoid callback crashes
 	if (ofGetFrameNum() == 0)
 	{

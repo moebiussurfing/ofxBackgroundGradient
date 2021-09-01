@@ -44,6 +44,8 @@ private:
 
 	ofImage img;
 
+	ofParameter<bool>bEnable{ "Enable", true };
+
 public:
 	enum typeGradienMode
 	{
