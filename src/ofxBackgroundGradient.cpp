@@ -93,7 +93,7 @@ void ofxBackgroundGradient::setup()
 	//--
 
 	// params
-	bGui.set("Gui BACKGROUND", false);//we use this toggle to easy add to external (ofApp) gui panel
+	bGui.set("Gui Background", false);//we use this toggle to easy add to external (ofApp) gui panel
 	bEditByMouse.set("Mouse Edit", false);
 	bGui_Advanced.set("Gui Advanced", false);
 	bGui_Help.set("Help", false);
@@ -381,7 +381,7 @@ void ofxBackgroundGradient::drawFloor() {
 	if (!bEnable) return;
 
 	if (!bFloor) return;
-	if (!bDrawFloorGrid && !bThemeGreenFloor) return;
+	if (!bDrawFloorGrid || !bThemeGreenFloor) return;
 
 	//-
 
@@ -473,7 +473,6 @@ void ofxBackgroundGradient::refresh_Draw()
 
 			if (gradientType == 2) ofBackgroundGradient(color1, color2, ofGradientMode(1));
 			else if (gradientType == 3) ofBackgroundGradient(color1, color2, ofGradientMode(2));
-
 		}
 
 		//-
