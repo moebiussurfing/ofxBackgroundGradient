@@ -152,12 +152,14 @@ private:
 	// API
 
 public:
-	void setPosition(glm::vec2 position)
+	void setGuiPosition(glm::vec2 position)
 	{
 		positionGui = position;
 		gui_AppControl.setPosition(positionGui.get().x, positionGui.get().y);
 	}
-
+	auto getGuiShape() { 
+		if (!bGui_Advanced && bGui) return gui_AppControl.getShape();
+	}
 	void toggleVisibleGui()
 	{
 		bGui = !bGui;
