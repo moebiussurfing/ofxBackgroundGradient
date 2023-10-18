@@ -447,7 +447,7 @@ void ofxBackgroundGradient::refresh_Draw()
 
 		else if (gradientType == 1)
 		{
-			ofBackgroundGradient(color1, color2, ofGradientMode(0));
+			ofBackgroundGradient(color1.get(), color2.get(), ofGradientMode(0));
 		}
 
 		//-
@@ -471,8 +471,10 @@ void ofxBackgroundGradient::refresh_Draw()
 			//ofBackground(color2);
 			ofClear(color2);
 
-			if (gradientType == 2) ofBackgroundGradient(color1, color2, ofGradientMode(1));
-			else if (gradientType == 3) ofBackgroundGradient(color1, color2, ofGradientMode(2));
+			if (gradientType == 2)
+				ofBackgroundGradient(color1.get(), color2.get(), ofGradientMode(1));
+			else if (gradientType == 3)
+				ofBackgroundGradient(color1.get(), color2.get(), ofGradientMode(2));
 		}
 
 		//-
