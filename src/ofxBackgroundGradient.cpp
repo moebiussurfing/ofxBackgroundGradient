@@ -227,7 +227,7 @@ void ofxBackgroundGradient::setup()
 	//--
 
 	//gui
-
+	if (0)
 	ofxSurfingHelpers::setThemeDark_ofxGui();
 
 	//1. control
@@ -813,11 +813,11 @@ void ofxBackgroundGradient::Changed_Params_Preset(ofAbstractParameter &e)
 		{
 			if (bSwapColors)
 			{
-				bSwapColors = false;
+				bSwapColors.setWithoutEventNotifications(false);
 				ofColor _c;
 				_c.set(color1.get());
-				color1.set(color2.get());
-				color2 = _c;
+				color1.setWithoutEventNotifications(color2.get());
+				color2.setWithoutEventNotifications(_c);
 			}
 		}
 
