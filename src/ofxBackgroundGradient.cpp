@@ -91,7 +91,7 @@ void ofxBackgroundGradient::setup() {
 	//--
 
 	// params
-	bGui.set("Gui Background", false); //we use this toggle to easy add to external (ofApp) gui panel
+	bGui.set("Background", false); //we use this toggle to easy add to external (ofApp) gui panel
 	bEditByMouse.set("Mouse Edit", false);
 	bGui_Advanced.set("Gui Advanced", false);
 	bGui_Help.set("Help", false);
@@ -224,25 +224,25 @@ void ofxBackgroundGradient::setup() {
 
 	//--
 
-	//gui
+	// gui
 	if (0)
 		ofxSurfingHelpers::setThemeDark_ofxGui();
 
-	//1. control
+	// 1. control
 	gui_AppControl.setup("ofxBackgroundGradient");
 	gui_AppControl.add(params_Advanced);
 	//gui_AppControl.add(params_AppSettings);
 	//gui_AppControl.setPosition();
 
-	//2. preset
+	// 2. preset
 	gui_PresetSettings.setup("ofxBackgroundGradient");
 	gui_PresetSettings.add(params_Preset);
 
 	//--
 
-	//collapse
+	// collapse
 
-	//gui1
+	// gui1
 	//auto &g1 = gui_AppControl.getGroup(params_AppSettings.getName());
 	//auto &g2 = g1.getGroup(params_Advanced.getName());
 	//g1.minimize();
@@ -253,7 +253,7 @@ void ofxBackgroundGradient::setup() {
 	//g2.getGroup(positionGui.getName()).minimize();
 	//g2.minimize();
 
-	//gui2
+	// gui2
 	auto & g0 = gui_PresetSettings.getGroup(params_Preset.getName());
 	g0.minimize();
 	g0.getGroup(params_Gradient.getName()).minimize();
