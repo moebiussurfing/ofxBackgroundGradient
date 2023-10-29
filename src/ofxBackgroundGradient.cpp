@@ -7,6 +7,8 @@ ofxBackgroundGradient::ofxBackgroundGradient() {
 #else
 	#ifdef USE_XML
 	_extension = ".xml";
+	#else
+	_extension = ".json";
 	#endif
 #endif
 
@@ -16,14 +18,14 @@ ofxBackgroundGradient::ofxBackgroundGradient() {
 	path_AppSettings = "AppSettings";
 	path_AppSettings += _extension;
 
-	path_SettingsXml = path_Global + "layout.xml";
+	path_Internal = path_Global + "BgGradient_Internal" + _extension;
 
 #ifdef USE_PRESETS
 	path_Presets = path_Global + "presets/";
 #endif
 
 #ifndef USE_PRESETS
-	path_PresetSettings = path_Global + "ofxBackgroundGradient_Preset" + _extension;
+	path_PresetSettings = path_Global + "BgGradient_Preset" + _extension;
 #endif
 
 	//-
@@ -43,7 +45,7 @@ ofxBackgroundGradient::ofxBackgroundGradient() {
 	helpInfo += "H              HELP\n";
 	helpInfo += "G              GUI\n";
 	helpInfo += "+|-            TYPE\n";
-	helpInfo += "TAB            SWAP COLORS\n";
+	helpInfo += "TAB            FLIP COLORS\n";
 	helpInfo += "M              MOUSE EDIT\n";
 	helpInfo += "MOUSE WHEEL    ZOOM TRANSFORM\n";
 	helpInfo += "+Ctrl          ZOOM OFFSET\n";
@@ -91,7 +93,7 @@ void ofxBackgroundGradient::setup() {
 	//--
 
 	// params
-	bGui.set("Background", false); //we use this toggle to easy add to external (ofApp) gui panel
+	bGui.set("Gui BgGradient", false); //we use this toggle to easy add to external (ofApp) gui panel
 	bEditByMouse.set("Mouse Edit", false);
 	bGui_Advanced.set("Gui Advanced", false);
 	bGui_Help.set("Help", false);
@@ -108,7 +110,7 @@ void ofxBackgroundGradient::setup() {
 		glm::vec2(ofGetWidth(), ofGetHeight()));
 	color1.set("Color 1", ofColor(200), ofColor(0), ofColor(255));
 	color2.set("Color 2", ofColor(32), ofColor(0), ofColor(255));
-	gradientType.set("Type", 0, 0, NUM_TYPES - 1);
+	gradientType.set("Type", 2, 0, NUM_TYPES - 1);
 	gradientType_str.set(" ", "");
 	scaleX.set("Scale x", 2.0f, 0.1f, 5.0f);
 	scaleY.set("Scale y", 2.0f, 0.1f, 5.0f);
@@ -116,7 +118,7 @@ void ofxBackgroundGradient::setup() {
 	bScaleLink.set("Link Scales", true);
 	//degrees.set("Degrees", 0.0f, 0.0f, 360.0f);
 	bRandomizeAll.set("Randomize All", false);
-	bSwapColors.set("Swap Colors", false);
+	bFlipColors.set("Flip Colors", false);
 	bRandomizeColors.set("Randomize Colors", false);
 	bResetAll.set("Reset All", false);
 	bResetTransform.set("Reset Transform", false);
@@ -137,7 +139,7 @@ void ofxBackgroundGradient::setup() {
 	params_Gradient.setName("Gradient");
 	params_Gradient.add(color1);
 	params_Gradient.add(color2);
-	params_Gradient.add(bSwapColors);
+	params_Gradient.add(bFlipColors);
 
 	params_circleMode.setName("Circular Type");
 	params_circleMode.add(posOffset);
@@ -149,7 +151,7 @@ void ofxBackgroundGradient::setup() {
 
 	params_Editor.setName("3D Editor Mode");
 	//params_Editor.add(bEditorMode);
-	params_Editor.add(bFloor);
+	params_Editor.add(bDrawFloor);
 	params_Editor.add(bDrawFloorGrid);
 	params_Editor.add(bThemeGreenFloor);
 	//params_Gradient.add(params_Editor);
@@ -162,7 +164,7 @@ void ofxBackgroundGradient::setup() {
 	params_Transform.add(speed);
 
 	params_Preset.setName("Preset");
-	params_Preset.add(bEnable);
+	params_Preset.add(bDrawBg);
 	params_Preset.add(gradientType);
 	params_Preset.add(gradientType_str);
 	//params_Preset.add(bScaleLink);
@@ -196,8 +198,8 @@ void ofxBackgroundGradient::setup() {
 	params_Advanced.add(bResetTransform);
 	params_Advanced.add(bResetOffset);
 	params_Advanced.add(bResetAll);
-	params_Advanced.add(bEditByMouse);
-	////params_Advanced.add(positionGui);
+	//params_Advanced.add(bEditByMouse);
+	////params_Advanced.add(positionGuiAdvanced);
 	//params_AppSettings.add(params_Advanced);
 
 	//params_AppSettings.add(bScaleLink);
@@ -207,7 +209,7 @@ void ofxBackgroundGradient::setup() {
 
 	//exclude
 	gradientType_str.setSerializable(false);
-	bSwapColors.setSerializable(false);
+	bFlipColors.setSerializable(false);
 	bEditByMouse.setSerializable(false);
 	//bScaleLink.setSerializable(false);
 	bRandomizeAll.setSerializable(false);
@@ -225,37 +227,37 @@ void ofxBackgroundGradient::setup() {
 	//--
 
 	// gui
-	if (0)
+	if (1)
 		ofxSurfingHelpers::setThemeDark_ofxGui();
 
 	// 1. control
-	gui_AppControl.setup("ofxBackgroundGradient");
-	gui_AppControl.add(params_Advanced);
-	//gui_AppControl.add(params_AppSettings);
-	//gui_AppControl.setPosition();
+	gui_Advanced.setup("BgGradient Advanced");
+	gui_Advanced.add(params_Advanced);
+	//gui_Advanced.add(params_AppSettings);
+	//gui_Advanced.setPosition();
 
 	// 2. preset
-	gui_PresetSettings.setup("ofxBackgroundGradient");
-	gui_PresetSettings.add(params_Preset);
+	gui_Preset.setup("BgGradient Preset");
+	gui_Preset.add(params_Preset);
 
 	//--
 
 	// collapse
 
 	// gui1
-	//auto &g1 = gui_AppControl.getGroup(params_AppSettings.getName());
+	//auto &g1 = gui_Advanced.getGroup(params_AppSettings.getName());
 	//auto &g2 = g1.getGroup(params_Advanced.getName());
 	//g1.minimize();
 
-	auto & g1 = gui_AppControl.getGroup(params_Advanced.getName());
-	g1.minimize();
+	auto & g1 = gui_Advanced.getGroup(params_Advanced.getName());
+	//g1.minimize();
 
-	//g2.getGroup(positionGui.getName()).minimize();
+	//g2.getGroup(positionGuiAdvanced.getName()).minimize();
 	//g2.minimize();
 
 	// gui2
-	auto & g0 = gui_PresetSettings.getGroup(params_Preset.getName());
-	g0.minimize();
+	auto & g0 = gui_Preset.getGroup(params_Preset.getName());
+	//g0.minimize();
 	g0.getGroup(params_Gradient.getName()).minimize();
 	g0.getGroup(params_Transform.getName()).minimize();
 
@@ -287,17 +289,16 @@ void ofxBackgroundGradient::setup() {
 	//app
 	//ofxSurfingHelpers::loadGroup(params_AppSettings, path_Global + path_AppSettings);
 
-	params_SettingsXml.setName("SettingsXml");
-	params_SettingsXml.add(positionGui);
-	params_SettingsXml.add(positionGui2);
-	params_SettingsXml.add(bGui_Advanced);
-	params_SettingsXml.add(bGui);
+	params_Internal.setName("Internal");
+	//params_Internal.add(positionGuiAdvanced);
+	//params_Internal.add(positionGuiPreset);
+	params_Internal.add(bGui_Advanced);
+	params_Internal.add(bGui);
 
-	ofxSurfingHelpers::loadGroup(params_SettingsXml, path_SettingsXml);
+	ofxSurfingHelpers::loadGroup(params_Internal, path_Internal);
 
-	gui_AppControl.setPosition(positionGui.get().x, positionGui.get().y);
-
-	gui_PresetSettings.setPosition(positionGui2.get().x, positionGui2.get().y);
+	//gui_Preset.setPosition(positionGuiPreset.get().x, positionGuiPreset.get().y);
+	//gui_Advanced.setPosition(positionGuiAdvanced.get().x, positionGuiAdvanced.get().y);
 
 	//preset
 #ifndef USE_PRESETS
@@ -315,7 +316,7 @@ void ofxBackgroundGradient::setup() {
 
 //--------------------------------------------------------------
 void ofxBackgroundGradient::mouseDragged(ofMouseEventArgs & eventArgs) {
-	if (!bEnable) return;
+	if (!bDrawBg) return;
 
 	const int & x = eventArgs.x;
 	const int & y = eventArgs.y;
@@ -328,7 +329,7 @@ void ofxBackgroundGradient::mouseDragged(ofMouseEventArgs & eventArgs) {
 }
 //--------------------------------------------------------------
 void ofxBackgroundGradient::mouseScrolled(ofMouseEventArgs & eventArgs) {
-	if (!bEnable) return;
+	if (!bDrawBg) return;
 
 	const int & x = eventArgs.x;
 	const int & y = eventArgs.y;
@@ -373,9 +374,9 @@ void ofxBackgroundGradient::filesRefresh() {
 
 //--------------------------------------------------------------
 void ofxBackgroundGradient::drawFloor() {
-	if (!bEnable) return;
+	if (!bDrawBg) return;
 
-	if (!bFloor) return;
+	if (!bDrawFloor) return;
 	if (!bDrawFloorGrid || !bThemeGreenFloor) return;
 
 		//-
@@ -421,7 +422,7 @@ void ofxBackgroundGradient::drawFloor() {
 
 //--------------------------------------------------------------
 void ofxBackgroundGradient::refresh_Draw() {
-	if (!bEnable) return;
+	if (!bDrawBg) return;
 
 	fbo.begin();
 	ofClear(ofColor::black);
@@ -510,7 +511,7 @@ void ofxBackgroundGradient::refresh_Draw() {
 
 //--------------------------------------------------------------
 void ofxBackgroundGradient::drawBackground() {
-	if (!bEnable) return;
+	if (!bDrawBg) return;
 
 	if (bTransform) {
 		if (bRotateAuto) {
@@ -554,24 +555,25 @@ void ofxBackgroundGradient::drawGui() {
 	if (bGui) {
 		ofDisableDepthTest();
 
+		//help
 		if (bGui_Help) ofxSurfingHelpers::drawTextBoxed(font, helpInfo, 10, 10);
 
 		if (bGui_Advanced) {
-			auto p = gui_PresetSettings.getShape().getTopRight() + glm::vec2(2, 0);
-			gui_AppControl.setPosition(p);
-			gui_AppControl.draw();
+			auto p = gui_Preset.getShape().getTopRight() + glm::vec2(2, 0);
+			gui_Advanced.setPosition(p);
+			gui_Advanced.draw();
 		}
 
-		//glm::vec2 posg = gui_AppControl.getShape().getBottomLeft() + glm::vec2(0, 5);
-		//glm::vec2 posg = gui_AppControl.getShape().getTopRight() + glm::vec2(5, 0);
-		//gui_PresetSettings.setPosition(posg.x, posg.y);
-		gui_PresetSettings.draw();
+		//glm::vec2 posg = gui_Advanced.getShape().getBottomLeft() + glm::vec2(0, 5);
+		//glm::vec2 posg = gui_Advanced.getShape().getTopRight() + glm::vec2(5, 0);
+		//gui_Preset.setPosition(posg.x, posg.y);
+		gui_Preset.draw();
 	}
 }
 
 //--------------------------------------------------------------
 void ofxBackgroundGradient::update(ofEventArgs & args) {
-	if (!bEnable) return;
+	if (!bDrawBg) return;
 
 	//workaround to avoid callback crashes
 	if (ofGetFrameNum() == 0) {
@@ -756,9 +758,9 @@ void ofxBackgroundGradient::Changed_Params_Preset(ofAbstractParameter & e) {
 			refresh_Gui();
 		}
 
-		else if (name == bSwapColors.getName()) {
-			if (bSwapColors) {
-				bSwapColors.setWithoutEventNotifications(false);
+		else if (name == bFlipColors.getName()) {
+			if (bFlipColors) {
+				bFlipColors.setWithoutEventNotifications(false);
 				ofColor _c;
 				_c.set(color1.get());
 				color1.setWithoutEventNotifications(color2.get());
@@ -807,15 +809,15 @@ void ofxBackgroundGradient::refresh_Gui() {
 	//collapse
 
 	//gui1
-	auto & g1 = gui_AppControl.getGroup(params_Advanced.getName()); //app
-	//auto &g1 = gui_AppControl.getGroup(params_AppSettings.getName());//app
+	auto & g1 = gui_Advanced.getGroup(params_Advanced.getName()); //app
+	//auto &g1 = gui_Advanced.getGroup(params_AppSettings.getName());//app
 	//auto &g2 = g1.getGroup(params_Advanced.getName());
-	//g2.getGroup(positionGui.getName()).minimize();
+	//g2.getGroup(positionGuiAdvanced.getName()).minimize();
 	//g1.minimize();
 	//g2.minimize();
 
 	//gui2
-	auto & g0 = gui_PresetSettings.getGroup(params_Preset.getName()); //preset
+	auto & g0 = gui_Preset.getGroup(params_Preset.getName()); //preset
 	//g0.getGroup(params_Gradient.getName()).minimize();
 	//g0.getGroup(params_Transform.getName()).minimize();
 	//g0.minimize();
@@ -905,10 +907,10 @@ void ofxBackgroundGradient::exit() {
 	}
 
 	//app
-	positionGui = gui_AppControl.getPosition();
-	positionGui2 = gui_PresetSettings.getPosition();
+	//positionGuiAdvanced = gui_Advanced.getPosition();
+	//positionGuiPreset = gui_Preset.getPosition();
 	//ofxSurfingHelpers::saveGroup(params_AppSettings, path_Global + path_AppSettings);
-	ofxSurfingHelpers::saveGroup(params_SettingsXml, path_SettingsXml);
+	ofxSurfingHelpers::saveGroup(params_Internal, path_Internal);
 }
 
 //--------------------------------------------------------------
@@ -974,7 +976,7 @@ void ofxBackgroundGradient::keyPressed(ofKeyEventArgs & eventArgs) {
 	if (bEditByMouse) {
 		//TODO: must enable first..
 		if (key == OF_KEY_TAB) {
-			bSwapColors = !bSwapColors;
+			bFlipColors = !bFlipColors;
 		} else if (key == '+') {
 			gradientType++;
 			gradientType = (int)ofWrap(gradientType, 0, NUM_TYPES - 1);

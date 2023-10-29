@@ -44,7 +44,8 @@ private:
 
 	ofImage img;
 
-	ofParameter<bool>bEnable{ "Enable", true };
+public:
+	ofParameter<bool>bDrawBg{ "Draw Bg", true };
 
 public:
 	enum typeGradienMode
@@ -116,7 +117,7 @@ public:
 	ofParameterGroup params_AppSettings;
 	ofParameterGroup params_Advanced;
 
-	ofParameterGroup params_SettingsXml;
+	ofParameterGroup params_Internal;
 
 //private:
 public:
@@ -126,8 +127,8 @@ public:
 	//--
 
 private:
-	ofxPanel gui_AppControl;
-	ofxPanel gui_PresetSettings;
+	ofxPanel gui_Advanced;
+	ofxPanel gui_Preset;
 
 //public:
 private:
@@ -136,8 +137,8 @@ private:
 	//-
 
 private:
-	ofParameter<glm::vec2> positionGui{ "GUI POSITION", glm::vec2(400,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
-	ofParameter<glm::vec2> positionGui2{ "GUI POSITION 2", glm::vec2(600,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
+	ofParameter<glm::vec2> positionGuiPreset{ "GUI POSITION 1", glm::vec2(600,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
+	ofParameter<glm::vec2> positionGuiAdvanced{ "GUI POSITION 2", glm::vec2(400,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
 
 private:
 	void refresh_Gui();
@@ -154,11 +155,11 @@ private:
 public:
 	void setGuiPosition(glm::vec2 position)
 	{
-		positionGui = position;
-		gui_AppControl.setPosition(positionGui.get().x, positionGui.get().y);
+		positionGuiPreset = position;
+		gui_Preset.setPosition(positionGuiPreset.get().x, positionGuiPreset.get().y);
 	}
 	auto getGuiShape() { 
-		if (!bGui_Advanced && bGui) return gui_AppControl.getShape();
+		if (!bGui_Advanced && bGui) return gui_Preset.getShape();
 	}
 	void toggleVisibleGui()
 	{
@@ -199,11 +200,11 @@ public:
 	}
 	void setSwapColors()
 	{
-		bSwapColors = true;
+		bFlipColors = true;
 	}
 	bool getSwapColors()
 	{
-		return bSwapColors;
+		return bFlipColors;
 	}
 
 	//-
@@ -221,7 +222,7 @@ private:
 	ofParameter<int> gradientType;
 	ofParameter<std::string> gradientType_str;
 	ofParameter<bool> bRandomizeAll;
-	ofParameter<bool> bSwapColors;
+	ofParameter<bool> bFlipColors;
 	ofParameter<bool> bRandomizeColors;
 	ofParameter<bool> bResetAll;
 	ofParameter<bool> bResetTransform;
@@ -252,10 +253,11 @@ private:
 	std::string path_Presets;
 	std::string path_file;
 	std::string path_AppSettings;
-	std::string path_SettingsXml;
+	std::string path_Internal;
 	std::string path_PresetSettings;
 	std::string path_Images;
 
+public:
 	//editor cam
 	//a personalized neurral gradient color and camera too to use on a 3d editor environment
 	//ofParameter<bool> bEditorMode;
@@ -263,7 +265,7 @@ private:
 	ofParameter<bool> bThemeGreenFloor;
 	
 public:
-	ofParameter<bool> bFloor{ "Floor", false };
+	ofParameter<bool> bDrawFloor{ "Floor", false };
 
 	private:
 	ofEasyCam cam;//testing purpose camera

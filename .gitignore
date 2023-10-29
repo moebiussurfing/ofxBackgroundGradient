@@ -6,10 +6,11 @@
 
 ## can exclude some sttings files
 gitIgnoreUpdate.ps1
-#*.XML
-#*.xml
-#*.JSON
-#*.json
+
+*.XML
+*.xml
+*.JSON
+*.json
 
 #*/bin/*
 #!*/bin/data/
