@@ -110,11 +110,10 @@ private:
 
 public:
 	ofParameterGroup params_Preset; // settings for preset itself
-	ofParameterGroup params_Gradient;
-
-	ofParameterGroup params_Editor;
 	ofParameterGroup params_Helpers;
 
+	ofParameterGroup params_Gradient;
+	ofParameterGroup params_Editor;
 	ofParameterGroup params_Internal;
 
 public:
