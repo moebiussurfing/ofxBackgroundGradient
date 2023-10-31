@@ -26,7 +26,11 @@ ofxBackgroundGradient bg;
 
 ofApp.cpp
 ```.cpp
-bg.draw();
+void ofApp::draw()
+{
+  bg.drawBackground();
+  bg.drawGui();
+}
 ```
 
 ## Dependencies
