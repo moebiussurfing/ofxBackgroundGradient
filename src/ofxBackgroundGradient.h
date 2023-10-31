@@ -1,5 +1,4 @@
 #pragma once
-
 #include "ofMain.h"
 
 // some useful links:
@@ -12,23 +11,41 @@
 // + Refill when smaller than 1 scale that do not fill the screen
 // + Fix bar transformation margins to fit window
 
-//-
+//--
+
+// Optional
+//#define USE_PRESETS
+
+//--
 
 #include "ofxGui.h"
 #include "ofxSurfingHelpers.h"
 #include "ofxSurfing_ofxGui.h"
 
-//#define USE_PRESETS
-
 #define NUM_TYPES 6
 
-class ofxBackgroundGradient
-//class ofxBackgroundGradient : public ofBaseApp
-{
+class ofxBackgroundGradient {
+
+public:
+	ofxBackgroundGradient();
+	~ofxBackgroundGradient();
 
 private:
-	//public:
+	void setup();
+	void setupParams();
+	void startup();
+	void exit();
 
+public:
+	//void draw(); //draw background and gui
+	void drawBackground(); //draw background
+	void drawFloor();
+	
+	void drawGui(); //draw gui
+
+	//--
+
+private:
 	float w;
 	float h;
 	ofFbo fbo;
@@ -45,11 +62,10 @@ private:
 	ofImage img;
 
 public:
-	ofParameter<bool>bDrawBg{ "Draw Bg", true };
+	ofParameter<bool> bDrawBg { "Draw Bg", true };
 
 public:
-	enum typeGradienMode
-	{
+	enum typeGradienMode {
 		ONE_COLOR = 0,
 		LINEAR,
 		CIRCULAR,
@@ -57,40 +73,22 @@ public:
 		IMAGE
 	};
 
-	//--
-
-
-public:
-	ofxBackgroundGradient();
-	~ofxBackgroundGradient();
-
-	void setup();
-	void exit();
-
-	void draw();//draw background and gui
-	void drawBackground();//draw background
-	void drawGui();//draw gui
-
-public:
-	void drawFloor();
-
 private:
 	void refresh_Draw();
 
 private:
 	void update(ofEventArgs & args);
 	void windowResized(ofResizeEventArgs & args);
-	//void windowResized(int w, int h);
-	void keyPressed(ofKeyEventArgs &eventArgs);
-	void keyReleased(ofKeyEventArgs &eventArgs);
-	void mouseDragged(ofMouseEventArgs &eventArgs);
-	void mouseScrolled(ofMouseEventArgs &eventArgs);
+	void keyPressed(ofKeyEventArgs & eventArgs);
+	void keyReleased(ofKeyEventArgs & eventArgs);
+	void mouseDragged(ofMouseEventArgs & eventArgs);
+	void mouseScrolled(ofMouseEventArgs & eventArgs);
 
-private:
-	//presets browser
+	// presets browser
 #ifdef USE_PRESETS
+private:
 	void filesRefresh();
-	vector <std::string> imgNamesForListBox;
+	vector<std::string> imgNamesForListBox;
 	ofParameter<int> indexFilePreset;
 	ofParameter<bool> bSavePreset;
 	ofParameter<bool> bNewPreset;
@@ -98,6 +96,7 @@ private:
 
 	void loadPreset(int index);
 	void loadNext();
+	ofParameterGroup params_PresetManager;
 #endif
 
 	std::string _extension;
@@ -110,16 +109,14 @@ private:
 	//--
 
 public:
-	ofParameterGroup params_Preset;//preset itself
+	ofParameterGroup params_Preset; // settings for preset itself
 	ofParameterGroup params_Gradient;
 
 	ofParameterGroup params_Editor;
-	ofParameterGroup params_AppSettings;
-	ofParameterGroup params_Advanced;
+	ofParameterGroup params_Helpers;
 
 	ofParameterGroup params_Internal;
 
-//private:
 public:
 	ofParameter<ofColor> color1;
 	ofParameter<ofColor> color2;
@@ -127,206 +124,150 @@ public:
 	//--
 
 private:
-	ofxPanel gui_Advanced;
+	ofxPanel gui_Helpers;
 	ofxPanel gui_Preset;
 
-//public:
 private:
 	ofParameter<bool> bEditByMouse;
 
 	//-
 
 private:
-	ofParameter<glm::vec2> positionGuiPreset{ "GUI POSITION 1", glm::vec2(600,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
-	ofParameter<glm::vec2> positionGuiAdvanced{ "GUI POSITION 2", glm::vec2(400,10) , glm::vec2(0,0) , glm::vec2(1920,1080) };
-
-private:
-	void refresh_Gui();
-
-	////TODO:
-	////this method could handle the collapsing of the groups
-	////but should use guiGroups...or to pass the gui pannel and the parent levels..
-	//void refreshGuiPtr(ofxPanel &_gui);
+	void doRefreshGui();
 
 	//----
 
 	// API
 
 public:
-	void setGuiPosition(glm::vec2 position)
-	{
-		positionGuiPreset = position;
-		gui_Preset.setPosition(positionGuiPreset.get().x, positionGuiPreset.get().y);
+	void setGuiPosition(glm::vec2 position) {
+		gui_Preset.setPosition(position.x, position.y);
 	}
-	auto getGuiShape() { 
-		if (!bGui_Advanced && bGui) return gui_Preset.getShape();
+	auto getGuiShape() {
+		if (!bGui_Helpers && bGui) return gui_Preset.getShape();
 	}
-	void toggleVisibleGui()
-	{
+	void toggleVisibleGui() {
 		bGui = !bGui;
 	}
-	void setVisibleGui(bool b)
-	{
+	void setVisibleGui(bool b) {
 		bGui = b;
 	}
-	void setAutoSaveLoad(bool b)
-	{
-		autoSaveLoad = b;
+	void setAutoSaveLoad(bool b) {
+		bAutoSaveLoad = b;
 		ofLogNotice(__FUNCTION__) << "setAutoSaveLoad: " << b;
 	}
 
 public:
-	void reset()
-	{
-		resetAll();
+	void doReset() {
+		doResetAll();
 	}
 
 	//to update gui outside addon class
-	bool isTypeChanged()
-	{
-		if (typeChanged)
-		{
-			typeChanged = false;
+	bool isTypeChanged() {
+		if (bTypeChanged) {
+			bTypeChanged = false;
 			return true;
-		}
-		else
-		{
+		} else {
 			return false;
 		}
 	}
-	int getType()
-	{
+	int getType() {
 		return gradientType.get();
-	}
-	void setSwapColors()
-	{
-		bFlipColors = true;
-	}
-	bool getSwapColors()
-	{
-		return bFlipColors;
 	}
 
 	//-
 
 private:
-
-	//to update gui outside addon class
-	bool typeChanged = false;
+	// to update gui outside addon class
+	bool bTypeChanged = false;
 
 	ofParameterGroup params_circleMode;
 
 	ofParameter<glm::vec2> posOffset;
-	ofParameter<float> scaleX;//for circle mode only
-	ofParameter<float> scaleY;//for circle mode only
+	ofParameter<float> scaleX; //for circle mode only
+	ofParameter<float> scaleY; //for circle mode only
 	ofParameter<int> gradientType;
 	ofParameter<std::string> gradientType_str;
-	ofParameter<bool> bRandomizeAll;
-	ofParameter<bool> bFlipColors;
-	ofParameter<bool> bRandomizeColors;
-	ofParameter<bool> bResetAll;
-	ofParameter<bool> bResetTransform;
-	ofParameter<bool> bResetOffset;
+
+	ofParameter<void> bRandomizeAll;
+	ofParameter<void> bRandomizeAllExceptType;
+	ofParameter<void> bFlipColors;
+	ofParameter<void> bRandomizeColors;
+	ofParameter<void> bResetAll;
+	ofParameter<void> bResetAllExceptColors;
+	ofParameter<void> bResetTransform;
+	ofParameter<void> bResetOffset;
 	ofParameter<bool> bScaleLink;
 
 public:
-	ofParameter<bool> bGui_Advanced;
-	//we use this toggle to easy add to external (ofApp) gui panel
+	ofParameter<bool> bGui_Helpers;
 	ofParameter<bool> bGui;
 	ofParameter<bool> bGui_Help;
 	ofParameter<bool> bKeys;
 
 private:
-	void Changed_Params_Preset(ofAbstractParameter &e);
-	void Changed_Params_AppSettings(ofAbstractParameter &e);
+	void Changed_Preset(ofAbstractParameter & e);
+	void Changed_AppSettings(ofAbstractParameter & e);
 	bool bDisableCallbacks = false;
 
-	ofColor randomColor();
-	void randomizeAll();
-	void resetAll();
-	void resetTransform();
-	void resetOffset();
+	ofColor doRandomColor();
+	void doRandomizeAll();
+	void doRandomizeAllExceptType();
+	void doResetAll();
+	void doResetAllExceptColors();
+	void doResetTransform();
+	void doResetOffset();
 
-	bool autoSaveLoad = true;
+	bool bAutoSaveLoad = true;
 
 	std::string path_Global;
-	std::string path_Presets;
+
+#ifdef USE_PRESETS
 	std::string path_file;
-	std::string path_AppSettings;
+	std::string path_Presets;
+	std::string path_PresetsManager;
+#endif
+
 	std::string path_Internal;
 	std::string path_PresetSettings;
 	std::string path_Images;
 
 public:
-	//editor cam
-	//a personalized neurral gradient color and camera too to use on a 3d editor environment
-	//ofParameter<bool> bEditorMode;
 	ofParameter<bool> bDrawFloorGrid;
 	ofParameter<bool> bThemeGreenFloor;
-	
+
 public:
-	ofParameter<bool> bDrawFloor{ "Floor", false };
+	ofParameter<bool> bDrawFloor { "Floor", false };
 
-	private:
-	ofEasyCam cam;//testing purpose camera
+private:
+	//ofEasyCam cam; //testing purpose camera
 
-	//TODO: 
-	//this will require a custom gradient/mesh drawing method..
-	//also to use translations on bar/linear modes besides circular
-	//ofParameter<float> degrees;
+	void setType(int t) {
+		switch (t) {
 
-	void setType(int t)
-	{
-		switch (t)
-		{
-
-		case 0:
-		{
-			//gradientType_str.setWithoutEventNotifications("ONE COLOR");
+		case 0: {
 			gradientType_str = ofToString("ONE COLOR");
-		}
-		break;
+		} break;
 
-		case 1:
-		{
-			//gradientType_str.setWithoutEventNotifications("LINEAR");
+		case 1: {
 			gradientType_str = ofToString("LINEAR");
-		}
-		break;
+		} break;
 
-		case 2:
-		{
-			//gradientType_str.setWithoutEventNotifications("CIRCULAR");
+		case 2: {
 			gradientType_str = ofToString("CIRCULAR");
-		}
-		break;
+		} break;
 
-		case 3:
-		{
-			//gradientType_str.setWithoutEventNotifications("BAR");
+		case 3: {
 			gradientType_str = ofToString("BAR");
-		}
-		break;
+		} break;
 
-		case 4:
-		{
-			//gradientType_str.setWithoutEventNotifications("IMAGE");
+		case 4: {
 			gradientType_str = ofToString("IMAGE");
-		}
-		break;
+		} break;
 
-		case 5:
-		{
-			//gradientType_str.setWithoutEventNotifications("IMAGE");
+		case 5: {
 			gradientType_str = ofToString("3D EDITOR");
+		} break;
 		}
-		break;
-
-		}
-
-		//if (t == 5) bEditorMode = true;
-		//else bEditorMode = false;
 	}
 };
-
-

@@ -3,15 +3,15 @@
 //--------------------------------------------------------------
 void ofApp::draw()
 {
-	//bg.draw(); // -> draws bg and gui
-
-	bg.drawBackground(); // -> draws bg
+	bg.drawBackground(); // draws bg
 
 	cam.begin();
 	{
-		bg.drawFloor(); // -> draws a 3d floor environment
+		bg.drawFloor(); // draws a 3d floor environment
 	}
 	cam.end();
 
-	bg.drawGui(); // -> draws gui
+	//--
+
+	bg.drawGui(); // draws gui
 }
