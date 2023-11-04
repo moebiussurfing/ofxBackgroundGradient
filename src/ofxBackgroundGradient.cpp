@@ -120,7 +120,7 @@ void ofxBackgroundGradient::setup() {
 //--------------------------------------------------------------
 void ofxBackgroundGradient::setupParams() {
 
-	bGui.set("Gui BgGradient", true);
+	bGui.set("BgGradient", true);
 
 	bEditByMouse.set("Mouse Edit", false);
 	bGui_Helpers.set("Gui Helpers", false);

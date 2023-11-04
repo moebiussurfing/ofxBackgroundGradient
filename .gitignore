@@ -555,3 +555,6 @@ example_background/example_background.xcodeproj/project.pbxproj
 example_background/example_background.xcodeproj/xcshareddata/xcschemes/example_background Debug.xcscheme
 example_background/example_background.xcodeproj/xcshareddata/xcschemes/example_background Release.xcscheme
 example_background/bin/data/.gitkeep
+example-Bg_Basic/bin/data/ofxBgGradient/images/img5.png
+example-Bg_Basic/bin/data/ofxBgGradient/images/img4.png
+example-Bg_Basic/bin/data/ofxBgGradient/images/img3.png

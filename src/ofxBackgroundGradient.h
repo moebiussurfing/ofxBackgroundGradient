@@ -139,6 +139,9 @@ private:
 	// API
 
 public:
+	void setGuiPosition(int x, int y) {
+		gui_Preset.setPosition(x, y);
+	}
 	void setGuiPosition(glm::vec2 position) {
 		gui_Preset.setPosition(position.x, position.y);
 	}
