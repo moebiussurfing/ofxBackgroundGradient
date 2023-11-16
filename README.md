@@ -1,3 +1,9 @@
+
+**DEPRECATED AND MOVED  
+TO https://github.com/moebiussurfing/ofxSurfingBg**
+
+-----------
+
 # ofxBackgroundGradient 
 
 ## Overview
