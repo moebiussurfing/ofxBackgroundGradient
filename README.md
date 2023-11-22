@@ -1,6 +1,5 @@
-
-**DEPRECATED AND MOVED TO**  
-https://github.com/moebiussurfing/ofxSurfingBg
+# **DEPRECATED AND MOVED TO**  
+# https://github.com/moebiussurfing/ofxSurfingBg
 
 -----------
 
